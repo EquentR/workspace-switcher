@@ -155,6 +155,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand SyncStaticPinsCommand { get; }
     public ICommand SelectWindowsTabCommand { get; }
     public ICommand SelectTaskbarTabCommand { get; }
+    public ICommand ExportProfileCommand { get; }
+    public ICommand ImportProfileCommand { get; }
 
     public MainViewModel(
         WindowManager windowManager,
@@ -190,6 +192,8 @@ public class MainViewModel : INotifyPropertyChanged
         SyncStaticPinsCommand = new RelayCommand(SyncStaticPins);
         SelectWindowsTabCommand = new RelayCommand(() => SelectedInspectorTab = 0);
         SelectTaskbarTabCommand = new RelayCommand(() => SelectedInspectorTab = 1);
+        ExportProfileCommand = new RelayCommand<ProfileItemViewModel>(ExportProfile);
+        ImportProfileCommand = new RelayCommand(ImportProfile);
 
         _hotkeyManager.HotKeyPressed += OnHotKeyPressed;
 
@@ -432,6 +436,59 @@ public class MainViewModel : INotifyPropertyChanged
         catch (Exception ex)
         {
             StatusMessage = $"Error deleting profile: {ex.Message}";
+        }
+    }
+
+    public void ExportProfile(ProfileItemViewModel? item)
+    {
+        var target = item ?? SelectedProfile;
+        if (target == null) return;
+
+        try
+        {
+            var sfd = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = $"Export Workspace Profile '{target.Name}'",
+                Filter = "Workspace Profile (*.json)|*.json|All Files (*.*)|*.*",
+                DefaultExt = ".json",
+                FileName = $"{target.Name}.json"
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                _profileService.ExportProfile(target.Name, sfd.FileName);
+                StatusMessage = $"Exported workspace '{target.Name}' to {System.IO.Path.GetFileName(sfd.FileName)}.";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error exporting profile: {ex.Message}";
+        }
+    }
+
+    public void ImportProfile()
+    {
+        try
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Import Workspace Profile",
+                Filter = "Workspace Profile (*.json)|*.json|All Files (*.*)|*.*",
+                DefaultExt = ".json",
+                Multiselect = false
+            };
+
+            if (ofd.ShowDialog() == true)
+            {
+                var imported = _profileService.ImportProfile(ofd.FileName);
+                LoadProfiles();
+                SelectedProfile = Profiles.FirstOrDefault(p => string.Equals(p.Name, imported.Name, StringComparison.OrdinalIgnoreCase));
+                StatusMessage = $"Imported workspace '{imported.Name}' successfully.";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error importing profile: {ex.Message}";
         }
     }
 

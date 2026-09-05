@@ -5,8 +5,9 @@
 ![GitHub License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 ![.NET Version](https://img.shields.io/badge/.NET-8.0%20%7C%209.0-512BD4?style=for-the-badge&logo=dotnet)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=for-the-badge&logo=windows)
+[![Build & Test](https://img.shields.io/badge/CI%2FCD-Passing-brightgreen.svg?style=for-the-badge&logo=githubactions)](https://github.com/yMaxM15/workspace-switcher/actions/workflows/ci.yml)
+![Tests](https://img.shields.io/badge/Tests-55%20Passed-brightgreen.svg?style=for-the-badge&logo=xunit)
 ![Architecture](https://img.shields.io/badge/Architecture-x64%20%7C%20ARM64-lightgrey?style=for-the-badge)
-![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)
 
 **A high-performance, native Windows utility to snapshot, customize, and instantly restore multi-monitor window layouts and application workspaces via global hotkeys, standalone executable, and system tray.**
 
@@ -40,6 +41,9 @@ When switching between multi-monitor setups, docking stations, unplugging extern
 * 📌 **Dynamic Taskbar App Switching:** Seamlessly switch your Windows taskbar pinned applications per workspace! Transition from a gaming taskbar (Steam, Discord, OBS) to a work taskbar (VS Code, Teams, Slack) instantly upon restoring or switching workspaces.
 * 🔒 **Static Pinned Apps Support:** Tag any pinned app as **Static (All Workspaces)** with a single click. Essential tools like your primary Web Browser or File Explorer stay permanently pinned across every workspace layout while workspace-only pins swap dynamically.
 * 🗂️ **Dual Workspace Inspector (Windows & Taskbar Tabs):** Easily switch between inspecting open windows (with coordinates, states, and monitor assignments) and managing taskbar pinned shortcuts (with live icon rendering, static toggle pills, manual snapshot, and apply buttons).
+* 📦 **Workspace Export & Import (1-Click JSON Portability):** Easily export and import workspace configurations as standard JSON files directly through the dashboard UI or CLI. Effortlessly transfer profiles between PCs or backup multi-monitor arrangements.
+* 💻 **Headless Command Line Interface (CLI):** Complete scriptable CLI (`workspaceswitcher list`, `apply`, `snapshot`, `export`, `import`, `delete`, `monitor`) for developer terminal workflows, PowerShell automation, and headless daemon operation.
+* 🧪 **Automated Test Suite & GitHub Actions CI:** Fully verified by a 55-test suite (xUnit) and continuous integration pipeline running automated builds, tests, and artifact publishing on Windows runners.
 * 📸 **Intelligent Multi-Monitor Snapshots:** Automatically discovers all user-facing application windows across all connected displays while filtering out invisible system services, desktop shells, and suspended UWP apps.
 * ⚡ **Pixel-Perfect Restoration:** Restores exact window coordinates and states (`Maximized`, `Normal`, `Minimized`) across single- and multi-monitor setups without coordinate distortion or window borders glitches.
 * 🎨 **Dedicated Workspace Creation & Edit Modal:** Click **`+ New`** or the **`✏️` Edit** button on any workspace to open a centered Dark Glassmorphism dialog where you can rename profiles, edit descriptions, toggle taskbar snapshotting, and choose from a 16-icon glyph palette (`💻`, `🎮`, `📚`, `💼`, `🎨`, `🚀`, `🌐`, `⚙️`, `🎬`, `🎧`, `⚡`, `🔥`, `🏆`, `📱`, `💡`, `☕`).
@@ -332,14 +336,35 @@ A ready-to-run portable single-file executable is generated in `./publish`:
    dotnet build WorkspaceSwitcher.sln -c Release
    ```
 
-3. **Launch the WPF Dashboard & Tray Application:**
+3. **Run the Automated Unit Test Suite:**
+   ```powershell
+   dotnet test WorkspaceSwitcher.sln
+   ```
+
+4. **Launch the WPF Dashboard & Tray Application:**
    ```powershell
    dotnet run --project src/WorkspaceSwitcher.UI
    ```
 
-4. **(Optional) Run the Headless CLI Diagnostic Tool:**
+5. **Headless Command-Line Interface (CLI):**
    ```powershell
-   dotnet run --project src/WorkspaceSwitcher.Cli
+   # List all saved workspaces
+   dotnet run --project src/WorkspaceSwitcher.Cli -- list
+
+   # Instantly apply a workspace (with optional automatic app launch)
+   dotnet run --project src/WorkspaceSwitcher.Cli -- apply Coding --launch
+
+   # Snapshot current windows to a workspace
+   dotnet run --project src/WorkspaceSwitcher.Cli -- snapshot Gaming --desc "Gaming & Streaming" --icon 🎮
+
+   # Export a workspace to a JSON backup file
+   dotnet run --project src/WorkspaceSwitcher.Cli -- export Coding C:\Backups\Coding.json
+
+   # Import a workspace from JSON
+   dotnet run --project src/WorkspaceSwitcher.Cli -- import C:\Backups\Coding.json
+
+   # Run the global hotkey daemon headless in background
+   dotnet run --project src/WorkspaceSwitcher.Cli -- monitor
    ```
 
 ---
@@ -348,50 +373,65 @@ A ready-to-run portable single-file executable is generated in `./publish`:
 
 ```text
 workspace-switcher/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                           # GitHub Actions CI: Build, Test & Artifacts
 ├── .gitignore
 ├── README.md
 ├── WorkspaceSwitcher.sln
 ├── publish/                                 # Standalone single-file Release executable
 │   └── WorkspaceSwitcher.UI.exe
-└── src/
-    ├── WorkspaceSwitcher.Core/              # Core Engine Class Library (.NET 8)
-    │   ├── Hotkeys/
-    │   │   ├── HotkeyManager.cs             # Win32 HWND_MESSAGE Global Hotkey Loop
-    │   │   ├── HotKeyModel.cs               # HotKeyBinding & EventArgs
-    │   │   └── KeyModifiers.cs              # Modifiers Enum (Ctrl, Alt, Shift, Win)
-    │   ├── Models/
-    │   │   ├── AppSettings.cs               # Application preferences model
-    │   │   ├── WindowInfo.cs                # Window metadata & process paths
-    │   │   ├── WindowPlacementInfo.cs       # Geometry & state DTOs
-    │   │   └── WorkspaceProfile.cs          # Workspace profile container with icon glyph
-    │   ├── Native/
-    │   │   └── NativeMethods.cs             # 64-bit safe Win32 & DWM P/Invoke declarations
-    │   ├── Services/
-    │   │   ├── AppIdentityHelper.cs         # Smart executable resolution & multi-process matching
-    │   │   ├── IProfileService.cs           # Profile management interface
-    │   │   ├── MonitorService.cs            # Multi-display detection & bounds service
-    │   │   ├── ProfileService.cs            # Atomic JSON read/write persistence
-    │   │   └── SettingsService.cs           # Application configuration service
-    │   └── WindowManager.cs                 # Snapshot filtering, matching & repositioning engine
-    │
-    ├── WorkspaceSwitcher.UI/                # Modern Cyberpunk WPF Application (.NET 8)
-    │   ├── App.xaml / App.xaml.cs           # App lifecycle & glassmorphism theme resources
-    │   ├── MainWindow.xaml / .cs            # 2-column dark dashboard & window inspector
-    │   ├── app.ico                          # Multi-resolution application icon (16-256px)
-    │   ├── app.manifest                     # Per-Monitor V2 DPI-awareness manifest
-    │   ├── Views/
-    │   │   └── WorkspaceDialog.xaml / .cs   # Modal dialog for creating and editing profiles
-    │   ├── Services/
-    │   │   ├── IconHelper.cs                # Native high-res .exe icon extractor & cache
-    │   │   └── TrayIconService.cs           # System Tray Icon & dynamic context menu
-    │   └── ViewModels/
-    │       ├── MainViewModel.cs             # Primary MVVM ViewModel
-    │       ├── ProfileItemViewModel.cs      # Workspace Card & Icon ViewModel
-    │       ├── WindowItemViewModel.cs       # Per-Window Inspector ViewModel
-    │       └── RelayCommand.cs              # Generic ICommand implementation
-    │
-    └── WorkspaceSwitcher.Cli/               # Headless CLI & Test Runner
-        └── Program.cs                       # Snapshot & Hotkey verification tool
+├── src/
+│   ├── WorkspaceSwitcher.Core/              # Core Engine Class Library (.NET 8)
+│   │   ├── Hotkeys/
+│   │   │   ├── HotkeyManager.cs             # Win32 HWND_MESSAGE Global Hotkey Loop
+│   │   │   ├── HotKeyModel.cs               # HotKeyBinding & EventArgs
+│   │   │   ├── HotkeyHelper.cs              # Hotkey parsing & display formatting
+│   │   │   └── KeyModifiers.cs              # Modifiers Enum (Ctrl, Alt, Shift, Win)
+│   │   ├── Models/
+│   │   │   ├── AppSettings.cs               # Application preferences model
+│   │   │   ├── TaskbarConfiguration.cs      # Pinned taskbar snapshot model
+│   │   │   ├── TaskbarPinnedItem.cs         # Pinned item metadata & Base64 shortcut
+│   │   │   ├── WindowInfo.cs                # Window metadata & process paths
+│   │   │   ├── WindowPlacementInfo.cs       # Geometry & state DTOs
+│   │   │   └── WorkspaceProfile.cs          # Workspace profile container with icon glyph
+│   │   ├── Native/
+│   │   │   └── NativeMethods.cs             # 64-bit safe Win32 & DWM P/Invoke declarations
+│   │   ├── Services/
+│   │   │   ├── AppIdentityHelper.cs         # Smart executable resolution & multi-process matching
+│   │   │   ├── IProfileService.cs           # Profile management interface
+│   │   │   ├── MonitorService.cs            # Multi-display detection & bounds service
+│   │   │   ├── ProfileService.cs            # Atomic JSON read/write persistence
+│   │   │   ├── SettingsService.cs           # Application configuration service
+│   │   │   └── TaskbarService.cs            # Taskbar pinning & COM ShellLink engine
+│   │   └── WindowManager.cs                 # Snapshot filtering, matching & repositioning engine
+│   │
+│   ├── WorkspaceSwitcher.UI/                # Modern Cyberpunk WPF Application (.NET 8)
+│   │   ├── App.xaml / App.xaml.cs           # App lifecycle & glassmorphism theme resources
+│   │   ├── MainWindow.xaml / .cs            # 2-column dark dashboard & window inspector
+│   │   ├── app.ico                          # Multi-resolution application icon (16-256px)
+│   │   ├── app.manifest                     # Per-Monitor V2 DPI-awareness manifest
+│   │   ├── Views/
+│   │   │   └── WorkspaceDialog.xaml / .cs   # Modal dialog for creating and editing profiles
+│   │   ├── Services/
+│   │   │   ├── IconHelper.cs                # Native high-res .exe icon extractor & cache
+│   │   │   └── TrayIconService.cs           # System Tray Icon & dynamic context menu
+│   │   └── ViewModels/
+│   │       ├── MainViewModel.cs             # Primary MVVM ViewModel
+│   │       ├── ProfileItemViewModel.cs      # Workspace Card & Icon ViewModel
+│   │       ├── WindowItemViewModel.cs       # Per-Window Inspector ViewModel
+│   │       └── RelayCommand.cs              # Generic ICommand implementation
+│   │
+│   └── WorkspaceSwitcher.Cli/               # Headless CLI & Automation Tool (.NET 8)
+│       └── Program.cs                       # Command-line parser & daemon
+│
+└── tests/
+    └── WorkspaceSwitcher.Tests/             # Automated xUnit Test Suite (.NET 8)
+        ├── ProfileServiceTests.cs           # Persistence, atomic replace, export/import
+        ├── SettingsServiceTests.cs          # App settings serialization & defaults
+        ├── HotkeyHelperTests.cs             # Modifier & virtual key parsing
+        ├── AppIdentityHelperTests.cs        # Process identity & path resolution
+        └── WindowPlacementTests.cs          # Window rect & Win32 placement tests
 ```
 
 ---
