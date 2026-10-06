@@ -13,7 +13,7 @@ public partial class WorkspaceDialog : Window
     public string WorkspaceIcon { get; private set; } = "💻";
     public string HotkeyModifier { get; private set; } = "Ctrl + Alt";
     public string HotkeyKey { get; private set; } = "Auto (1-5)";
-    public bool CaptureTaskbar { get; private set; } = true;
+    public bool CaptureTaskbar { get; private set; } = false;
 
     public WorkspaceDialog(
         string? initialName = null, 

@@ -82,6 +82,8 @@ public partial class MainWindow : Window
 
         TaskbarTabText.Text = localizer.Get("Taskbar.Title");
         TaskbarTitleText.Text = localizer.Get("Taskbar.Title");
+        TaskbarBetaBadgeText.Text = localizer.Get("Taskbar.BetaBadge");
+        TaskbarBetaNoticeText.Text = localizer.Get("Taskbar.BetaNotice");
         TaskbarEnabledText.Text = localizer.Get("Taskbar.EnabledLabel");
         string snapshotButton = localizer.Get("Taskbar.SnapshotButton");
         SnapshotTaskbarButtonText.Text = snapshotButton;

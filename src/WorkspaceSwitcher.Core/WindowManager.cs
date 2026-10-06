@@ -61,7 +61,7 @@ public class WindowManager
         string? iconGlyph = null, 
         string? hotkeyModifier = null, 
         string? hotkeyKey = null,
-        bool captureTaskbar = true,
+        bool captureTaskbar = false,
         IEnumerable<string>? staticAppIdentifiers = null)
     {
         var profile = new WorkspaceProfile(profileName)

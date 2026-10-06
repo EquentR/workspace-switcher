@@ -8,7 +8,7 @@ namespace WorkspaceSwitcher.Core.Models;
 /// </summary>
 public class TaskbarConfiguration
 {
-    public bool Enabled { get; set; } = true;
+    public bool Enabled { get; set; } = false;
     public byte[]? Favorites { get; set; }
     public byte[]? FavoritesResolve { get; set; }
     public int? FavoritesVersion { get; set; }

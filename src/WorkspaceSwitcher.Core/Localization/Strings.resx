@@ -336,6 +336,14 @@
   <data name="Taskbar.EnabledLabel" xml:space="preserve">
     <value>Enabled for this workspace</value>
   </data>
+  <data name="Taskbar.BetaBadge" xml:space="preserve">
+    <value>Beta</value>
+    <comment>Badge on the taskbar tab; taskbar pin switching is a beta feature.</comment>
+  </data>
+  <data name="Taskbar.BetaNotice" xml:space="preserve">
+    <value>Beta feature: switching taskbar pinned apps can be unstable on some Windows builds.</value>
+    <comment>Stability warning shown at the top of the taskbar tab.</comment>
+  </data>
   <data name="Taskbar.SnapshotButton" xml:space="preserve">
     <value>Snapshot Current Taskbar</value>
     <comment>Shared name of both snapshot entries (header button and empty-state button).</comment>

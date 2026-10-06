@@ -320,6 +320,14 @@
   <data name="Taskbar.EnabledLabel" xml:space="preserve">
     <value>为此工作区启用</value>
   </data>
+  <data name="Taskbar.BetaBadge" xml:space="preserve">
+    <value>Beta</value>
+    <comment>任务栏页签徽标；任务栏固定应用切换为 Beta 功能。</comment>
+  </data>
+  <data name="Taskbar.BetaNotice" xml:space="preserve">
+    <value>Beta 功能：任务栏固定应用切换存在稳定性问题，部分 Windows 版本可能异常。</value>
+    <comment>页签顶部的稳定性提示。</comment>
+  </data>
   <data name="Taskbar.SnapshotButton" xml:space="preserve">
     <value>保存当前任务栏布局</value>
     <comment>两处入口（列表按钮与空状态按钮）采用一致名称。</comment>

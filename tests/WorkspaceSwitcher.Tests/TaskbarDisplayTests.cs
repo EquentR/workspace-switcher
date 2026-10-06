@@ -205,6 +205,10 @@ public class TaskbarDisplayTests
     [InlineData(UiLanguage.ChineseSimplified, "Taskbar.ShellShortcutFallback", "Windows Shell 快捷方式")]
     [InlineData(UiLanguage.English, "Taskbar.EmptyTitle", "No Taskbar Layout Captured For This Workspace")]
     [InlineData(UiLanguage.ChineseSimplified, "Taskbar.EmptyTitle", "此工作区尚未保存任务栏布局")]
+    [InlineData(UiLanguage.English, "Taskbar.BetaBadge", "Beta")]
+    [InlineData(UiLanguage.ChineseSimplified, "Taskbar.BetaBadge", "Beta")]
+    [InlineData(UiLanguage.English, "Taskbar.BetaNotice", "Beta feature: switching taskbar pinned apps can be unstable on some Windows builds.")]
+    [InlineData(UiLanguage.ChineseSimplified, "Taskbar.BetaNotice", "Beta 功能：任务栏固定应用切换存在稳定性问题，部分 Windows 版本可能异常。")]
     public void TaskbarChromeTexts_ResolveToLocalizedWords(UiLanguage language, string key, string expected)
     {
         var text = new Localizer(language).Get(key);

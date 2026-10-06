@@ -112,7 +112,7 @@
                             </StackPanel>
                             <TextBlock x:Name="TaskbarDescriptionText" Text="Saves current taskbar shortcuts (e.g. games vs work tools) with this workspace." FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                         </StackPanel>
-                        <CheckBox x:Name="CaptureTaskbarCheckBox" Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="True" VerticalAlignment="Center"/>
+                        <CheckBox x:Name="CaptureTaskbarCheckBox" Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="False" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
             </StackPanel>

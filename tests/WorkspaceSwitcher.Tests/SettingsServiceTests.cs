@@ -42,8 +42,32 @@ public class SettingsServiceTests : IDisposable
         Assert.True(File.Exists(_testSettingsFile));
         Assert.False(settings.AutoLaunchMissingApps);
         Assert.True(settings.MinimizeToTrayOnClose);
-        Assert.True(settings.SwitchTaskbarPins);
-        Assert.True(settings.CloseAppsOnSwitch);
+        // Opt-in by default: switching workspaces neither closes the old apps nor swaps
+        // the taskbar pinned-app set unless the user turns the option on.
+        Assert.False(settings.SwitchTaskbarPins);
+        Assert.False(settings.CloseAppsOnSwitch);
+    }
+
+    [Fact]
+    public void Load_WhenJsonLacksRestoreFlags_DefaultsToBothSwitchesDisabled()
+    {
+        // Settings written before the restore flags existed must fall back to the
+        // product defaults (both off), not the stale "true" model defaults.
+        File.WriteAllText(_testSettingsFile, """
+            {
+              "autoLaunchMissingApps": true,
+              "minimizeToTrayOnClose": true,
+              "lastActiveProfileName": "Legacy",
+              "staticPinnedApps": [ "chrome.exe" ],
+              "hotkeys": []
+            }
+            """);
+
+        var settings = _settingsService.Load();
+
+        Assert.NotNull(settings);
+        Assert.False(settings.CloseAppsOnSwitch);
+        Assert.False(settings.SwitchTaskbarPins);
     }
 
     [Fact]

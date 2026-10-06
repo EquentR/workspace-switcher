@@ -8,11 +8,11 @@ public class AppSettings
 {
     public bool AutoLaunchMissingApps { get; set; } = false;
     public bool MinimizeToTrayOnClose { get; set; } = true;
-    public bool CloseAppsOnSwitch { get; set; } = true;
+    public bool CloseAppsOnSwitch { get; set; } = false;
     public string? LastActiveProfileName { get; set; }
     public bool StartWithWindows { get; set; } = false;
     public string? CustomProfilesDirectory { get; set; }
-    public bool SwitchTaskbarPins { get; set; } = true;
+    public bool SwitchTaskbarPins { get; set; } = false;
     public List<string> StaticPinnedApps { get; set; } = new();
     public List<HotKeyBinding> Hotkeys { get; set; } = new();
 

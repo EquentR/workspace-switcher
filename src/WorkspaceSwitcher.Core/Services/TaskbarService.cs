@@ -30,7 +30,8 @@ public class TaskbarService
     {
         var config = new TaskbarConfiguration
         {
-            Enabled = true,
+            // Capturing keeps the snapshot; activating it stays an explicit opt-in.
+            Enabled = false,
             CapturedAt = DateTime.UtcNow,
             PinnedItems = new List<TaskbarPinnedItem>()
         };
