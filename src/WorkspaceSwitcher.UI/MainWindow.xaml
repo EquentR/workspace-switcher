@@ -12,7 +12,7 @@
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgDeepNightBrush}"
         Foreground="{StaticResource TextPrimaryBrush}"
-        FontFamily="Segoe UI Variable, Segoe UI">
+        FontFamily="{StaticResource AppFontFamily}">
 
     <Grid Margin="18,12,18,16">
         <Grid.RowDefinitions>
@@ -20,6 +20,8 @@
             <RowDefinition Height="Auto"/>
             <!-- Main Content Area -->
             <RowDefinition Height="*"/>
+            <!-- Status Bar (operation results) -->
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- 1. TOP HEADER BAR -->
@@ -228,8 +230,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="🖥" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock x:Name="BackgroundTitleText" Text="Workspace Switcher is running in the background" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBlock x:Name="BackgroundHintText" Text="Use your global hotkeys to quickly switch between workspaces." FontSize="10" Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock x:Name="BackgroundTitleText" Text="Workspace Switcher is running in the background" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="BackgroundHintText" Text="Use your global hotkeys to quickly switch between workspaces." FontSize="10" Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -256,32 +258,39 @@
 
                         <!-- Left: Large Icon + Name + Description + Tags -->
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <!-- Grid (Auto/*) constrains the text width so long names and
+                                 descriptions wrap instead of overlapping the action buttons. -->
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
                                 <Border Width="42" Height="42" CornerRadius="10" Background="{StaticResource IndigoPurpleGradient}" Margin="0,0,14,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding SelectedProfile.IconGlyph, FallbackValue='💻'}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding SelectedProfileNameDisplay}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="{Binding SelectedProfileDescriptionDisplay}" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding SelectedProfileNameDisplay}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding SelectedProfileDescriptionDisplay}" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
                                 </StackPanel>
-                            </StackPanel>
+                            </Grid>
 
-                            <!-- Metadata tags row -->
-                            <StackPanel Orientation="Horizontal" Margin="56,0,0,0" Visibility="{Binding HasSelectedProfile, Converter={StaticResource BoolToVis}}">
+                            <!-- Metadata tags row (wraps instead of overlapping the action
+                                 buttons when the window is at its minimum width) -->
+                            <WrapPanel Orientation="Horizontal" Margin="56,0,0,0" Visibility="{Binding HasSelectedProfile, Converter={StaticResource BoolToVis}}">
                                 <Border Background="#161D36" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6,1" Margin="0,0,8,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding SelectedProfile.DisplayHotkey}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource AccentIndigoBrush}"/>
                                 </Border>
                                 <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
-                                    <Run Text="🗔 "/><Run Text="{Binding SelectedProfile.WindowsStatDisplay}"/><Run Text="  •  "/>
+                                    <Run Text="🗔 "/><Run Text="{Binding SelectedProfile.WindowsStatDisplay, Mode=OneWay}"/><Run Text="  •  "/>
                                 </TextBlock>
                                 <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
-                                    <Run Text="🖥 "/><Run Text="{Binding SelectedProfile.MonitorsStatDisplay}"/><Run Text="  •  "/>
+                                    <Run Text="🖥 "/><Run Text="{Binding SelectedProfile.MonitorsStatDisplay, Mode=OneWay}"/><Run Text="  •  "/>
                                 </TextBlock>
                                 <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
-                                    <Run Text="📌 "/><Run Text="{Binding SelectedProfile.TaskbarPinsStatDisplay}"/><Run Text="  •  "/>
+                                    <Run Text="📌 "/><Run Text="{Binding SelectedProfile.TaskbarPinsStatDisplay, Mode=OneWay}"/><Run Text="  •  "/>
                                 </TextBlock>
                                 <TextBlock Text="{Binding SelectedProfile.CapturedDisplay}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
-                            </StackPanel>
+                            </WrapPanel>
                         </StackPanel>
 
                         <!-- Right: Action Buttons (Restore Workspace + Update) -->
@@ -888,8 +897,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock x:Name="AutoLaunchLabelText" Text="Auto-launch closed apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock x:Name="AutoLaunchDescriptionText" Text="Automatically start applications that were closed." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="AutoLaunchLabelText" Text="Auto-launch closed apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="AutoLaunchDescriptionText" Text="Automatically start applications that were closed." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding AutoLaunchMissingApps}"/>
                             </Grid>
@@ -901,8 +910,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock x:Name="CloseOldLabelText" Text="Close old workspace apps on switch" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock x:Name="CloseOldDescriptionText" Text="Close apps from the old workspace not in the new layout." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="CloseOldLabelText" Text="Close old workspace apps on switch" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="CloseOldDescriptionText" Text="Close apps from the old workspace not in the new layout." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding CloseAppsOnSwitch}"/>
                             </Grid>
@@ -914,8 +923,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock x:Name="MinimizeTrayLabelText" Text="Minimize to System Tray on close [X]" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock x:Name="MinimizeTrayDescriptionText" Text="Keep Workspace Switcher running in the background." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="MinimizeTrayLabelText" Text="Minimize to System Tray on close [X]" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="MinimizeTrayDescriptionText" Text="Keep Workspace Switcher running in the background." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding MinimizeToTrayOnClose}"/>
                             </Grid>
@@ -923,11 +932,17 @@
                             <!-- Active Workspace Indicator -->
                             <Grid Grid.Row="1" Grid.Column="2" Margin="0,12,0,0">
                                 <StackPanel VerticalAlignment="Center">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock x:Name="ActiveWorkspaceLabelText" Text="Active workspace: " FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                        <TextBlock Text="{Binding ActiveProfileNameDisplay}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentIndigoBrush}"/>
-                                    </StackPanel>
-                                    <TextBlock x:Name="TransitionDescriptionText" Text="Layouts smoothly transition across all connected displays." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <!-- Grid (Auto/*) so a long active workspace name wraps
+                                         within the card instead of drawing over its border. -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="ActiveWorkspaceLabelText" Grid.Column="0" Text="Active workspace: " FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding ActiveProfileNameDisplay}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentIndigoBrush}" TextWrapping="Wrap"/>
+                                    </Grid>
+                                    <TextBlock x:Name="TransitionDescriptionText" Text="Layouts smoothly transition across all connected displays." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Grid>
 
@@ -938,8 +953,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock x:Name="SwitchTaskbarLabelText" Text="Switch Taskbar pinned apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock x:Name="SwitchTaskbarDescriptionText" Text="Swap taskbar shortcuts between workspaces (e.g. Gaming vs Work)." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="SwitchTaskbarLabelText" Text="Switch Taskbar pinned apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="SwitchTaskbarDescriptionText" Text="Swap taskbar shortcuts between workspaces (e.g. Gaming vs Work)." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding SwitchTaskbarPins}"/>
                             </Grid>
@@ -952,7 +967,7 @@
                                         <TextBlock x:Name="StaticPinsLabelText" Text="Static pins: " FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
                                         <TextBlock x:Name="StaticPinsValueText" Text="Preserved across all layouts" FontSize="11" FontWeight="SemiBold" Foreground="#C084FC"/>
                                     </StackPanel>
-                                    <TextBlock x:Name="StaticPinsDescriptionText" Text="Toggle '📌 Static' on any pinned app to keep it across all workspaces." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="StaticPinsDescriptionText" Text="Toggle '📌 Static' on any pinned app to keep it across all workspaces." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Grid>
 
@@ -980,5 +995,14 @@
                 </Border>
             </Grid>
         </Grid>
+
+        <!-- STATUS BAR: single display surface for the localized operation results
+             (StatusMessage). Display-only binding added by explicit user decision in
+             TASK-07 to close a pre-existing display gap (baseline raised StatusMessage
+             without ever binding it); message semantics and templates stay unchanged. -->
+        <Border Grid.Row="2" Margin="0,12,0,0"
+                Background="{StaticResource CardBgBrush}" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="14,7">
+            <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+        </Border>
     </Grid>
 </Window>

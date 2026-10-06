@@ -31,6 +31,12 @@
         <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
         <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMuted}"/>
 
+        <!-- Global font chain: Segoe UI for Latin with an explicit Windows Chinese
+             fallback (Microsoft YaHei UI / Microsoft YaHei) so Simplified Chinese text
+             never renders missing glyphs. Applied at the window roots; inherits to all
+             controls, tooltips and combo popups. -->
+        <FontFamily x:Key="AppFontFamily">Segoe UI Variable, Segoe UI, Microsoft YaHei UI, Microsoft YaHei</FontFamily>
+
         <!-- Gradients -->
         <LinearGradientBrush x:Key="IndigoPurpleGradient" StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#6366F1" Offset="0"/>

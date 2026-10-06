@@ -35,3 +35,6 @@ $RECYCLE.BIN/
 # User generated profiles & backups (keep templates/defaults, ignore local test outputs)
 profiles/temp/
 *.log
+
+# Local run materials (i18n run ledger, smoke screenshots, user AppData backups) — never commit
+.scratch/

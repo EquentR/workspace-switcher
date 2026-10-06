@@ -1,5 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Resources;
 using WorkspaceSwitcher.Core.Localization;
 using Xunit;
 
@@ -252,5 +256,96 @@ public class LocalizationTests
         var result = new Localizer(language).Format(key, "boom {x} 🎮", "  at Test()");
 
         Assert.Equal(expected, result);
+    }
+
+    /// <summary>
+    /// Guards the real FormatException bug class across the whole resource surface: for
+    /// every key, the neutral English and zh-CN templates must use the same format-
+    /// placeholder index set, and both languages must format successfully with the full
+    /// argument list. Keys absent from the zh-CN resource are covered by the per-key
+    /// English fallback and therefore match by design; this is not a per-label mirror test.
+    /// </summary>
+    [Fact]
+    public void ResourceTemplates_EnglishAndChinese_UseMatchingFormatPlaceholderIndexes()
+    {
+        var resources = new ResourceManager(
+            "WorkspaceSwitcher.Core.Localization.Strings", typeof(Localizer).Assembly);
+        var englishResources = resources.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
+        var chineseResources = resources.GetResourceSet(CultureInfo.GetCultureInfo("zh-CN"), true, false)!;
+
+        // Anchor from the spec terminology table: proves the zh-CN satellite resource is
+        // actually loaded, so the parity comparison below cannot pass tautologically.
+        Assert.Equal("我的工作区", chineseResources.GetObject("MainWindow.MyWorkspaces"));
+
+        var english = new Localizer(UiLanguage.English);
+        var chinese = new Localizer(UiLanguage.ChineseSimplified);
+        var generousArgs = Enumerable.Range(0, 10).Select(i => (object)i).ToArray();
+
+        var keys = new List<string>();
+        foreach (DictionaryEntry entry in englishResources)
+        {
+            keys.Add((string)entry.Key);
+        }
+
+        foreach (var key in keys.OrderBy(k => k, StringComparer.Ordinal))
+        {
+            var englishIndexes = PlaceholderIndexes((string)englishResources.GetObject(key)!);
+
+            if (chineseResources.GetObject(key) is string chineseTemplate)
+            {
+                Assert.Equal(englishIndexes, PlaceholderIndexes(chineseTemplate));
+            }
+
+            // Behavior at the facade: both languages must accept the same arguments
+            // without throwing (a malformed or mismatched placeholder surfaces here).
+            english.Format(key, generousArgs);
+            chinese.Format(key, generousArgs);
+        }
+    }
+
+    /// <summary>
+    /// Extracts the format-placeholder index set of a composite format template, mirroring
+    /// <see cref="string.Format(IFormatProvider, string, object[])"/> brace semantics:
+    /// <c>{{</c>/<c>}}</c> are escapes, and a malformed format item throws
+    /// <see cref="FormatException"/> exactly like the formatter would at runtime.
+    /// </summary>
+    private static HashSet<int> PlaceholderIndexes(string template)
+    {
+        var indexes = new HashSet<int>();
+        for (int i = 0; i < template.Length; i++)
+        {
+            char c = template[i];
+            if (c == '{')
+            {
+                if (i + 1 < template.Length && template[i + 1] == '{') { i++; continue; }
+
+                int end = template.IndexOf('}', i + 1);
+                if (end < 0)
+                {
+                    throw new FormatException($"Unclosed format item in \"{template}\".");
+                }
+
+                string item = template.Substring(i + 1, end - i - 1);
+                int cut = item.IndexOfAny(new[] { ',', ':' });
+                string indexText = cut < 0 ? item : item.Substring(0, cut);
+                if (!int.TryParse(indexText, out int index) || index < 0)
+                {
+                    throw new FormatException($"Malformed format item \"{{{item}}}\" in \"{template}\".");
+                }
+
+                indexes.Add(index);
+                i = end;
+            }
+            else if (c == '}')
+            {
+                if (i + 1 < template.Length && template[i + 1] == '}') { i++; }
+                else
+                {
+                    throw new FormatException($"Unmatched '}}' in \"{template}\".");
+                }
+            }
+        }
+
+        return indexes;
     }
 }
