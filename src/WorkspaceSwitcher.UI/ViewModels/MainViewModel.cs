@@ -290,13 +290,15 @@ public class MainViewModel : INotifyPropertyChanged
                 SelectedProfile = Profiles.FirstOrDefault(p => p.Name.Equals(profile.Name, StringComparison.OrdinalIgnoreCase));
                 RegisterDefaultHotkeys();
 
+                int windowCount = profile.Windows.Count;
                 int taskbarCount = profile.Taskbar?.PinnedItems.Count ?? 0;
-                string taskbarInfo = taskbarCount > 0 ? $", {taskbarCount} taskbar pin(s)" : "";
-                StatusMessage = $"Workspace '{profile.Name}' captured with {profile.Windows.Count} window(s){taskbarInfo}!";
+                StatusMessage = taskbarCount > 0
+                    ? Localizer.Current.Format("Status.CaptureSuccess", profile.Name, windowCount, taskbarCount)
+                    : Localizer.Current.Format("Status.CaptureSuccessNoPins", profile.Name, windowCount);
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Error capturing workspace: {ex.Message}";
+                StatusMessage = Localizer.Current.Format("Status.CaptureFailed", ex.Message);
             }
         }
     }
@@ -309,7 +311,7 @@ public class MainViewModel : INotifyPropertyChanged
         var owner = App.Current?.MainWindow;
         var dlg = new WorkspaceDialog(
             target.Name, 
-            target.Description, 
+            target.Profile.Description, 
             target.IconGlyph, 
             target.HotkeyModifier, 
             target.HotkeyKey, 
@@ -349,11 +351,11 @@ public class MainViewModel : INotifyPropertyChanged
                 SelectedProfile = Profiles.FirstOrDefault(p => p.Name.Equals(newName, StringComparison.OrdinalIgnoreCase));
                 RegisterDefaultHotkeys();
 
-                StatusMessage = $"Workspace '{newName}' updated successfully.";
+                StatusMessage = Localizer.Current.Format("Status.EditSuccess", newName);
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Error updating workspace: {ex.Message}";
+                StatusMessage = Localizer.Current.Format("Status.EditFailed", ex.Message);
             }
         }
     }

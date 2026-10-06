@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.UI.ViewModels;
 
 namespace WorkspaceSwitcher.UI.Views;
@@ -24,26 +25,40 @@ public partial class WorkspaceDialog : Window
     {
         InitializeComponent();
 
+        var localizer = Localizer.Current;
+
+        NameLabelText.Text = localizer.Get("WorkspaceDialog.NameLabel");
+        DescriptionLabelText.Text = localizer.Get("WorkspaceDialog.DescriptionLabel");
+        IconLabelText.Text = localizer.Get("WorkspaceDialog.IconLabel");
+        HotkeyLabelText.Text = localizer.Get("WorkspaceDialog.HotkeyLabel");
+        TaskbarTitleText.Text = localizer.Get("WorkspaceDialog.TaskbarLabel");
+        TaskbarDescriptionText.Text = localizer.Get("WorkspaceDialog.TaskbarDescription");
+        CancelButton.Content = localizer.Get("WorkspaceDialog.Cancel");
+
         IconListBox.ItemsSource = ProfileItemViewModel.AvailableIcons;
-        ModifierComboBox.ItemsSource = HotkeyHelper.AvailableModifiers;
-        KeyComboBox.ItemsSource = HotkeyHelper.AvailableKeys;
+        var modifierOptions = HotkeyDisplay.CreateModifierOptions(localizer);
+        ModifierComboBox.ItemsSource = modifierOptions;
+        var keyOptions = HotkeyDisplay.CreateKeyOptions(localizer);
+        KeyComboBox.ItemsSource = keyOptions;
 
         if (isEditMode)
         {
-            Title = "Edit Workspace";
+            Title = localizer.Get("WorkspaceDialog.Title.Edit");
             HeaderIconText.Text = "✏️";
-            HeaderTitleText.Text = "Edit Workspace";
-            HeaderSubtitleText.Text = "Modify the name, description, icon or hotkey for this workspace.";
-            PrimaryActionButton.Content = "💾 Save Changes";
+            HeaderTitleText.Text = localizer.Get("WorkspaceDialog.Title.Edit");
+            HeaderSubtitleText.Text = localizer.Get("WorkspaceDialog.Description.Edit");
+            PrimaryButtonIconText.Text = "💾";
+            PrimaryButtonText.Text = localizer.Get("WorkspaceDialog.Save.Edit");
             TaskbarOptionBorder.Visibility = Visibility.Collapsed;
         }
         else
         {
-            Title = "Create Workspace";
+            Title = localizer.Get("WorkspaceDialog.Title.Create");
             HeaderIconText.Text = "📷";
-            HeaderTitleText.Text = "Create Workspace";
-            HeaderSubtitleText.Text = "Capture your current multi-monitor window layout into a saved profile.";
-            PrimaryActionButton.Content = "📸 Capture & Save";
+            HeaderTitleText.Text = localizer.Get("WorkspaceDialog.Title.Create");
+            HeaderSubtitleText.Text = localizer.Get("WorkspaceDialog.Description.Create");
+            PrimaryButtonIconText.Text = "📸";
+            PrimaryButtonText.Text = localizer.Get("WorkspaceDialog.Save.Create");
         }
 
         NameTextBox.Text = initialName ?? string.Empty;
@@ -56,11 +71,11 @@ public partial class WorkspaceDialog : Window
             IconListBox.SelectedItem = ProfileItemViewModel.AvailableIcons[0];
         }
 
-        ModifierComboBox.SelectedItem = string.IsNullOrWhiteSpace(initialModifier) ? "Ctrl + Alt" : initialModifier;
-        if (ModifierComboBox.SelectedItem == null) ModifierComboBox.SelectedIndex = 0;
-
-        KeyComboBox.SelectedItem = string.IsNullOrWhiteSpace(initialKey) ? "Auto (1-5)" : initialKey;
-        if (KeyComboBox.SelectedItem == null) KeyComboBox.SelectedIndex = 0;
+        // Stored internal values select the matching option; display text never round-trips.
+        ModifierComboBox.SelectedItem = HotkeyDisplay.Resolve(
+            modifierOptions, string.IsNullOrWhiteSpace(initialModifier) ? "Ctrl + Alt" : initialModifier);
+        KeyComboBox.SelectedItem = HotkeyDisplay.Resolve(
+            keyOptions, string.IsNullOrWhiteSpace(initialKey) ? "Auto (1-5)" : initialKey);
 
         Loaded += (s, e) =>
         {
@@ -74,7 +89,10 @@ public partial class WorkspaceDialog : Window
         string name = NameTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            System.Windows.MessageBox.Show("Please enter a workspace name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            System.Windows.MessageBox.Show(
+                Localizer.Current.Get("WorkspaceDialog.NameRequired"),
+                Localizer.Current.Get("WorkspaceDialog.ValidationError"),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
             NameTextBox.Focus();
             return;
         }
@@ -82,8 +100,8 @@ public partial class WorkspaceDialog : Window
         WorkspaceName = name;
         WorkspaceDescription = DescriptionTextBox.Text.Trim();
         WorkspaceIcon = IconListBox.SelectedItem?.ToString() ?? "💻";
-        HotkeyModifier = ModifierComboBox.SelectedItem?.ToString() ?? "Ctrl + Alt";
-        HotkeyKey = KeyComboBox.SelectedItem?.ToString() ?? "Auto (1-5)";
+        HotkeyModifier = (ModifierComboBox.SelectedItem as HotkeyOption)?.Value ?? "Ctrl + Alt";
+        HotkeyKey = (KeyComboBox.SelectedItem as HotkeyOption)?.Value ?? "Auto (1-5)";
         CaptureTaskbar = CaptureTaskbarCheckBox.IsChecked == true;
 
         DialogResult = true;

@@ -12,7 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <!-- Language setting controls (TASK-01). Only these are localized so far. -->
+  <!-- Language setting controls (TASK-01). -->
   <data name="LanguageSetting.Label" xml:space="preserve">
     <value>Language</value>
   </data>
@@ -29,5 +29,86 @@
   </data>
   <data name="LanguageSetting.RestartHint" xml:space="preserve">
     <value>Language settings take effect on the next restart.</value>
+  </data>
+  <!-- Workspace create/edit dialog (TASK-02). Decorative emoji are kept as literal UI
+       symbols outside these templates and are not part of the localized text. -->
+  <data name="WorkspaceDialog.Title.Create" xml:space="preserve">
+    <value>Create Workspace</value>
+  </data>
+  <data name="WorkspaceDialog.Title.Edit" xml:space="preserve">
+    <value>Edit Workspace</value>
+  </data>
+  <data name="WorkspaceDialog.Description.Create" xml:space="preserve">
+    <value>Capture your current multi-monitor window layout into a saved profile.</value>
+  </data>
+  <data name="WorkspaceDialog.Description.Edit" xml:space="preserve">
+    <value>Modify the name, description, icon or hotkey for this workspace.</value>
+  </data>
+  <data name="WorkspaceDialog.NameLabel" xml:space="preserve">
+    <value>Workspace Name</value>
+  </data>
+  <data name="WorkspaceDialog.DescriptionLabel" xml:space="preserve">
+    <value>Description (optional)</value>
+  </data>
+  <data name="WorkspaceDialog.IconLabel" xml:space="preserve">
+    <value>Workspace Icon</value>
+  </data>
+  <data name="WorkspaceDialog.HotkeyLabel" xml:space="preserve">
+    <value>Quick Switch Hotkey</value>
+  </data>
+  <data name="WorkspaceDialog.TaskbarLabel" xml:space="preserve">
+    <value>Capture Taskbar Pinned Apps</value>
+  </data>
+  <data name="WorkspaceDialog.TaskbarDescription" xml:space="preserve">
+    <value>Saves current taskbar shortcuts (e.g. games vs work tools) with this workspace.</value>
+  </data>
+  <data name="WorkspaceDialog.Save.Create" xml:space="preserve">
+    <value>Capture &amp; Save</value>
+  </data>
+  <data name="WorkspaceDialog.Save.Edit" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="WorkspaceDialog.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="WorkspaceDialog.NameRequired" xml:space="preserve">
+    <value>Please enter a workspace name.</value>
+  </data>
+  <data name="WorkspaceDialog.ValidationError" xml:space="preserve">
+    <value>Validation Error</value>
+  </data>
+  <!-- Hotkey selector display names (TASK-02). English values equal the internal
+       tokens; only the display layer translates them. -->
+  <data name="Hotkey.ModifierNone" xml:space="preserve">
+    <value>None</value>
+    <comment>Display name for the modifier token "None"; the internal value is unchanged.</comment>
+  </data>
+  <data name="Hotkey.Auto" xml:space="preserve">
+    <value>Auto (1-5)</value>
+    <comment>Display name for the key token "Auto (1-5)"; the internal value is unchanged.</comment>
+  </data>
+  <data name="Hotkey.Disabled" xml:space="preserve">
+    <value>None (Disabled)</value>
+    <comment>Display name for the key token "None (Disabled)"; the internal value is unchanged.</comment>
+  </data>
+  <data name="Hotkey.NotSet" xml:space="preserve">
+    <value>No Hotkey</value>
+    <comment>Display text for a workspace without a hotkey.</comment>
+  </data>
+  <!-- Create/edit workspace result status (TASK-02). Complete templates only. -->
+  <data name="Status.CaptureSuccess" xml:space="preserve">
+    <value>Workspace '{0}' captured with {1} window(s), {2} taskbar pin(s)!</value>
+  </data>
+  <data name="Status.CaptureSuccessNoPins" xml:space="preserve">
+    <value>Workspace '{0}' captured with {1} window(s)!</value>
+  </data>
+  <data name="Status.CaptureFailed" xml:space="preserve">
+    <value>Error capturing workspace: {0}</value>
+  </data>
+  <data name="Status.EditSuccess" xml:space="preserve">
+    <value>Workspace '{0}' updated successfully.</value>
+  </data>
+  <data name="Status.EditFailed" xml:space="preserve">
+    <value>Error updating workspace: {0}</value>
   </data>
 </root>

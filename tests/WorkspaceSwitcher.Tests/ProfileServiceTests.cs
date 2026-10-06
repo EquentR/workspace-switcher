@@ -1,7 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
 using WorkspaceSwitcher.Core.Services;
 using Xunit;
@@ -210,5 +213,69 @@ public class ProfileServiceTests : IDisposable
         Assert.Equal(0, win.Placement.NormalPosition.Top);
         Assert.Equal(960, win.Placement.NormalPosition.Right);
         Assert.Equal(1040, win.Placement.NormalPosition.Bottom);
+    }
+
+    [Fact]
+    public void SaveAndLoadProfile_PreservesVerbatimNameAndDescription()
+    {
+        string name = "工作区 {0}🎮";
+        string description = "描述：{x}、引号 \"q\"、emoji 🚀";
+        var profile = new WorkspaceProfile(name) { Description = description };
+
+        _profileService.SaveProfile(profile);
+        var loaded = _profileService.LoadProfile(name);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(name, loaded.Name);
+        Assert.Equal(description, loaded.Description);
+    }
+
+    [Theory]
+    [InlineData("无", "自动分配（1–5）", "None", "Auto (1-5)", KeyModifiers.None, (uint)'1')]
+    [InlineData("Ctrl + Win", "禁用快捷键", "Ctrl + Win", "None (Disabled)", KeyModifiers.Control | KeyModifiers.Win, 0u)]
+    [InlineData("Ctrl + Alt", "F5", "Ctrl + Alt", "F5", KeyModifiers.Control | KeyModifiers.Alt, 0x74u)]
+    public void Profile_SavedFromLocalizedHotkeySelection_RoundTripsInternalValues(
+        string modifierDisplay, string keyDisplay, string expectedModifier, string expectedKey,
+        KeyModifiers expectedModifiers, uint expectedVk)
+    {
+        var localizer = new Localizer(UiLanguage.ChineseSimplified);
+        var modifierOptions = HotkeyDisplay.CreateModifierOptions(localizer);
+        var keyOptions = HotkeyDisplay.CreateKeyOptions(localizer);
+        var modifierOption = modifierOptions.Single(o => o.Display == modifierDisplay);
+        var keyOption = keyOptions.Single(o => o.Display == keyDisplay);
+
+        var profile = new WorkspaceProfile("本地化选择")
+        {
+            HotkeyModifier = modifierOption.Value,
+            HotkeyKey = keyOption.Value
+        };
+
+        _profileService.SaveProfile(profile);
+
+        // The configuration JSON keeps the original English tokens as the stored values;
+        // localized display labels (text differing from its token) never reach the file.
+        var localizedLabels = modifierOptions.Concat(keyOptions)
+            .Where(o => o.Display != o.Value)
+            .Select(o => o.Display)
+            .ToArray();
+        string json = File.ReadAllText(Directory.GetFiles(_testDirectory, "*.json").Single());
+        using var document = JsonDocument.Parse(json);
+        foreach (var property in document.RootElement.EnumerateObject())
+        {
+            if (property.Value.ValueKind == JsonValueKind.String)
+            {
+                Assert.DoesNotContain(property.Value.GetString(), localizedLabels);
+            }
+        }
+
+        Assert.Equal(expectedModifier, document.RootElement.GetProperty("hotkeyModifier").GetString());
+        Assert.Equal(expectedKey, document.RootElement.GetProperty("hotkeyKey").GetString());
+
+        var loaded = _profileService.LoadProfile("本地化选择");
+        Assert.NotNull(loaded);
+        Assert.Equal(expectedModifier, loaded.HotkeyModifier);
+        Assert.Equal(expectedKey, loaded.HotkeyKey);
+        Assert.Equal(expectedModifiers, HotkeyHelper.ParseModifiers(loaded.HotkeyModifier));
+        Assert.Equal(expectedVk, HotkeyHelper.ParseVirtualKey(loaded.HotkeyKey, 0));
     }
 }

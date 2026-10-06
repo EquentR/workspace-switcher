@@ -34,15 +34,15 @@
             <!-- Form Inputs -->
             <StackPanel Grid.Row="1">
                 <!-- Workspace Name -->
-                <TextBlock Text="Workspace Name" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                <TextBlock x:Name="NameLabelText" Text="Workspace Name" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="NameTextBox" Style="{StaticResource DarkGlassTextBox}" Margin="0,0,0,14"/>
 
                 <!-- Description -->
-                <TextBlock Text="Description (optional)" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                <TextBlock x:Name="DescriptionLabelText" Text="Description (optional)" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="DescriptionTextBox" Style="{StaticResource DarkGlassTextBox}" Margin="0,0,0,16"/>
 
                 <!-- Icon Picker -->
-                <TextBlock Text="Workspace Icon" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8"/>
+                <TextBlock x:Name="IconLabelText" Text="Workspace Icon" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8"/>
                 <ListBox x:Name="IconListBox" 
                          Background="Transparent" BorderThickness="0" Margin="0,0,0,16"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -85,7 +85,7 @@
                 </ListBox>
 
                 <!-- Hotkey Customization -->
-                <TextBlock Text="Quick Switch Hotkey" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                <TextBlock x:Name="HotkeyLabelText" Text="Quick Switch Hotkey" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
                 <Grid Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -93,8 +93,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox x:Name="ModifierComboBox" Grid.Column="0" Style="{StaticResource DarkGlassComboBox}"/>
-                    <ComboBox x:Name="KeyComboBox" Grid.Column="2" Style="{StaticResource DarkGlassComboBox}"/>
+                    <ComboBox x:Name="ModifierComboBox" Grid.Column="0" Style="{StaticResource DarkGlassComboBox}" DisplayMemberPath="Display"/>
+                    <ComboBox x:Name="KeyComboBox" Grid.Column="2" Style="{StaticResource DarkGlassComboBox}" DisplayMemberPath="Display"/>
                 </Grid>
 
                 <!-- Taskbar Pinning Option -->
@@ -105,8 +105,11 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
-                            <TextBlock Text="📌 Capture Taskbar Pinned Apps" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBlock Text="Saves current taskbar shortcuts (e.g. games vs work tools) with this workspace." FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📌" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,4,0"/>
+                                <TextBlock x:Name="TaskbarTitleText" Text="Capture Taskbar Pinned Apps" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+                            <TextBlock x:Name="TaskbarDescriptionText" Text="Saves current taskbar shortcuts (e.g. games vs work tools) with this workspace." FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <CheckBox x:Name="CaptureTaskbarCheckBox" Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="True" VerticalAlignment="Center"/>
                     </Grid>
@@ -123,11 +126,15 @@
 
                 <Button x:Name="PrimaryActionButton" Grid.Column="0" 
                         Style="{StaticResource IndigoGradientButton}" 
-                        Content="📸 Capture &amp; Save" 
                         Padding="16,10"
-                        Click="PrimaryActionButton_Click"/>
+                        Click="PrimaryActionButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="PrimaryButtonIconText" Text="📸" Margin="0,0,6,0"/>
+                        <TextBlock x:Name="PrimaryButtonText" Text="Capture &amp; Save"/>
+                    </StackPanel>
+                </Button>
 
-                <Button Grid.Column="2" 
+                <Button x:Name="CancelButton" Grid.Column="2" 
                         Style="{StaticResource DarkSecondaryButton}" 
                         Content="Cancel" 
                         Padding="16,10"

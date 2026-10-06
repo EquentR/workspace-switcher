@@ -110,4 +110,57 @@ public class LocalizationTests
 
         Assert.Equal(localizer.Get("LanguageSetting.RestartHint"), localizer.Format("LanguageSetting.RestartHint"));
     }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Work", 3, 2, "Workspace 'Work' captured with 3 window(s), 2 taskbar pin(s)!")]
+    [InlineData(UiLanguage.English, "Dev {0} \"q\"", 1, 1, "Workspace 'Dev {0} \"q\"' captured with 1 window(s), 1 taskbar pin(s)!")]
+    [InlineData(UiLanguage.English, "Game 🎮", 0, 2, "Workspace 'Game 🎮' captured with 0 window(s), 2 taskbar pin(s)!")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 3, 2, "已保存工作区‘工作区 {0} 🎮’，包含 3 个窗口、2 个任务栏固定项。")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 1, 1, "已保存工作区‘工作区 {0} 🎮’，包含 1 个窗口、1 个任务栏固定项。")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 0, 2, "已保存工作区‘工作区 {0} 🎮’，包含 0 个窗口、2 个任务栏固定项。")]
+    public void Format_CaptureSuccessWithPins_RendersCompleteMessage(
+        UiLanguage language, string name, int windows, int pins, string expected)
+    {
+        var result = new Localizer(language).Format("Status.CaptureSuccess", name, windows, pins);
+
+        Assert.Equal(expected, result);
+        Assert.DoesNotContain("{1}", result);
+        Assert.DoesNotContain("{2}", result);
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Work", 0, "Workspace 'Work' captured with 0 window(s)!")]
+    [InlineData(UiLanguage.English, "Work", 1, "Workspace 'Work' captured with 1 window(s)!")]
+    [InlineData(UiLanguage.English, "Work", 7, "Workspace 'Work' captured with 7 window(s)!")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 0, "已保存工作区‘工作区 {0} 🎮’，包含 0 个窗口。")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 1, "已保存工作区‘工作区 {0} 🎮’，包含 1 个窗口。")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", 7, "已保存工作区‘工作区 {0} 🎮’，包含 7 个窗口。")]
+    public void Format_CaptureSuccessWithoutPins_RendersCompleteMessage(
+        UiLanguage language, string name, int windows, string expected)
+    {
+        var result = new Localizer(language).Format("Status.CaptureSuccessNoPins", name, windows);
+
+        Assert.Equal(expected, result);
+        Assert.DoesNotContain("{1}", result);
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Work {0}", "Workspace 'Work {0}' updated successfully.")]
+    [InlineData(UiLanguage.ChineseSimplified, "工作区 {0} 🎮", "已更新工作区‘工作区 {0} 🎮’。")]
+    public void Format_EditSuccess_KeepsRealWorkspaceName(UiLanguage language, string name, string expected)
+    {
+        Assert.Equal(expected, new Localizer(language).Format("Status.EditSuccess", name));
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Status.CaptureFailed", "Error capturing workspace: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.CaptureFailed", "保存工作区失败：path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.English, "Status.EditFailed", "Error updating workspace: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.EditFailed", "更新工作区失败：path {x} \"missing\" 路径不存在")]
+    public void Format_CreateAndEditFailure_KeepOriginalErrorDetail(UiLanguage language, string key, string expected)
+    {
+        var result = new Localizer(language).Format(key, "path {x} \"missing\" 路径不存在");
+
+        Assert.Equal(expected, result);
+    }
 }

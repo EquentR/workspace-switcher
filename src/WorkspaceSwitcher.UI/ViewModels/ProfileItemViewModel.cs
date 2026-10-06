@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
 using WorkspaceSwitcher.Core.Services;
 
@@ -120,7 +121,7 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         }
     }
 
-    public string DisplayHotkey => HotkeyHelper.FormatDisplayHotkey(_profile.HotkeyModifier, _profile.HotkeyKey, _colorIndex);
+    public string DisplayHotkey => HotkeyDisplay.Format(Localizer.Current, _profile.HotkeyModifier, _profile.HotkeyKey, _colorIndex);
 
     public int WindowCount => _profile.Windows?.Count ?? 0;
 

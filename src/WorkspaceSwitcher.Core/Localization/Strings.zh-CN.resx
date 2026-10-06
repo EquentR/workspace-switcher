@@ -12,7 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <!-- Language setting controls (TASK-01). Only these are localized so far. -->
+  <!-- Language setting controls (TASK-01). -->
   <!-- Language self-names ("English", "简体中文") are intentionally absent:
        they are never translated and resolve through the English fallback. -->
   <data name="LanguageSetting.Label" xml:space="preserve">
@@ -23,5 +23,81 @@
   </data>
   <data name="LanguageSetting.RestartHint" xml:space="preserve">
     <value>语言设置将在下次启动时生效。</value>
+  </data>
+  <!-- Workspace create/edit dialog (TASK-02). Decorative emoji are kept as literal UI
+       symbols outside these templates and are not part of the localized text. -->
+  <data name="WorkspaceDialog.Title.Create" xml:space="preserve">
+    <value>创建工作区</value>
+  </data>
+  <data name="WorkspaceDialog.Title.Edit" xml:space="preserve">
+    <value>编辑工作区</value>
+  </data>
+  <data name="WorkspaceDialog.Description.Create" xml:space="preserve">
+    <value>将当前多显示器窗口布局保存为工作区配置。</value>
+  </data>
+  <data name="WorkspaceDialog.Description.Edit" xml:space="preserve">
+    <value>修改此工作区的名称、描述、图标或快捷键。</value>
+  </data>
+  <data name="WorkspaceDialog.NameLabel" xml:space="preserve">
+    <value>工作区名称</value>
+  </data>
+  <data name="WorkspaceDialog.DescriptionLabel" xml:space="preserve">
+    <value>描述（可选）</value>
+  </data>
+  <data name="WorkspaceDialog.IconLabel" xml:space="preserve">
+    <value>工作区图标</value>
+  </data>
+  <data name="WorkspaceDialog.HotkeyLabel" xml:space="preserve">
+    <value>快速切换快捷键</value>
+  </data>
+  <data name="WorkspaceDialog.TaskbarLabel" xml:space="preserve">
+    <value>保存任务栏固定应用</value>
+  </data>
+  <data name="WorkspaceDialog.TaskbarDescription" xml:space="preserve">
+    <value>将当前任务栏快捷方式（例如游戏或工作工具）一同保存到此工作区。</value>
+  </data>
+  <data name="WorkspaceDialog.Save.Create" xml:space="preserve">
+    <value>保存当前布局</value>
+  </data>
+  <data name="WorkspaceDialog.Save.Edit" xml:space="preserve">
+    <value>保存更改</value>
+  </data>
+  <data name="WorkspaceDialog.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="WorkspaceDialog.NameRequired" xml:space="preserve">
+    <value>请输入工作区名称。</value>
+  </data>
+  <data name="WorkspaceDialog.ValidationError" xml:space="preserve">
+    <value>输入校验失败</value>
+  </data>
+  <!-- Hotkey selector display names (TASK-02). Internal values stay original. -->
+  <data name="Hotkey.ModifierNone" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Hotkey.Auto" xml:space="preserve">
+    <value>自动分配（1–5）</value>
+  </data>
+  <data name="Hotkey.Disabled" xml:space="preserve">
+    <value>禁用快捷键</value>
+  </data>
+  <data name="Hotkey.NotSet" xml:space="preserve">
+    <value>未设置快捷键</value>
+  </data>
+  <!-- Create/edit workspace result status (TASK-02). Complete templates only. -->
+  <data name="Status.CaptureSuccess" xml:space="preserve">
+    <value>已保存工作区‘{0}’，包含 {1} 个窗口、{2} 个任务栏固定项。</value>
+  </data>
+  <data name="Status.CaptureSuccessNoPins" xml:space="preserve">
+    <value>已保存工作区‘{0}’，包含 {1} 个窗口。</value>
+  </data>
+  <data name="Status.CaptureFailed" xml:space="preserve">
+    <value>保存工作区失败：{0}</value>
+  </data>
+  <data name="Status.EditSuccess" xml:space="preserve">
+    <value>已更新工作区‘{0}’。</value>
+  </data>
+  <data name="Status.EditFailed" xml:space="preserve">
+    <value>更新工作区失败：{0}</value>
   </data>
 </root>

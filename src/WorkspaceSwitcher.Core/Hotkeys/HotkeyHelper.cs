@@ -84,8 +84,18 @@ public static class HotkeyHelper
 
     public static string FormatDisplayHotkey(string? modifier, string? key, int index = 0)
     {
+        return ComposeDisplayText(modifier, key, index) ?? "No Hotkey";
+    }
+
+    /// <summary>
+    /// Composes the technical display text (e.g. "Ctrl + Alt + 1") from internal values,
+    /// or null when the combination has no hotkey. Never returns translated text; the UI
+    /// layers localized labels on top through <see cref="HotkeyDisplay"/>.
+    /// </summary>
+    internal static string? ComposeDisplayText(string? modifier, string? key, int index = 0)
+    {
         if (string.Equals(key, "None (Disabled)", StringComparison.OrdinalIgnoreCase))
-            return "No Hotkey";
+            return null;
 
         string mod = string.IsNullOrWhiteSpace(modifier) ? "Ctrl + Alt" : modifier;
         if (string.Equals(mod, "None", StringComparison.OrdinalIgnoreCase))
@@ -97,7 +107,7 @@ public static class HotkeyHelper
             k = (index + 1 <= 5) ? (index + 1).ToString() : "";
         }
 
-        if (string.IsNullOrWhiteSpace(k)) return "No Hotkey";
+        if (string.IsNullOrWhiteSpace(k)) return null;
         return string.IsNullOrWhiteSpace(mod) ? k : $"{mod} + {k}";
     }
 }
