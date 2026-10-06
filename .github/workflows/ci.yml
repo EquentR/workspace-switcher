@@ -37,3 +37,15 @@ jobs:
       with:
         name: WorkspaceSwitcher-CLI-Windows
         path: ./publish-cli/
+
+    - name: Install Inno Setup
+      run: choco install innosetup --no-progress -y
+
+    - name: Build GUI Installer
+      run: ./installer/build-installer.ps1
+
+    - name: Upload GUI Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WorkspaceSwitcher-GUI-Setup
+        path: ./dist/*.exe

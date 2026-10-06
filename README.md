@@ -43,7 +43,7 @@ When switching between multi-monitor setups, docking stations, unplugging extern
 * 🗂️ **Dual Workspace Inspector (Windows & Taskbar Tabs):** Easily switch between inspecting open windows (with coordinates, states, and monitor assignments) and managing taskbar pinned shortcuts (with live icon rendering, static toggle pills, manual snapshot, and apply buttons).
 * 📦 **Workspace Export & Import (1-Click JSON Portability):** Easily export and import workspace configurations as standard JSON files directly through the dashboard UI or CLI. Effortlessly transfer profiles between PCs or backup multi-monitor arrangements.
 * 💻 **Headless Command Line Interface (CLI):** Complete scriptable CLI (`workspaceswitcher list`, `apply`, `snapshot`, `export`, `import`, `delete`, `monitor`) for developer terminal workflows, PowerShell automation, and headless daemon operation.
-* 🧪 **Automated Test Suite & GitHub Actions CI:** Fully verified by a 55-test suite (xUnit) and continuous integration pipeline running automated builds, tests, and artifact publishing on Windows runners.
+* 🧪 **Automated Test Suite & GitHub Actions CI:** Fully verified by a 55-test suite (xUnit) and continuous integration pipeline running automated builds, tests, and artifact publishing (CLI + Windows installer) on Windows runners; `v*` tags additionally publish a GitHub Release with the installer attached.
 * 📸 **Intelligent Multi-Monitor Snapshots:** Automatically discovers all user-facing application windows across all connected displays while filtering out invisible system services, desktop shells, and suspended UWP apps.
 * ⚡ **Pixel-Perfect Restoration:** Restores exact window coordinates and states (`Maximized`, `Normal`, `Minimized`) across single- and multi-monitor setups without coordinate distortion or window borders glitches.
 * 🎨 **Dedicated Workspace Creation & Edit Modal:** Click **`+ New`** or the **`✏️` Edit** button on any workspace to open a centered Dark Glassmorphism dialog where you can rename profiles, edit descriptions, toggle taskbar snapshotting, and choose from a 16-icon glyph palette (`💻`, `🎮`, `📚`, `💼`, `🎨`, `🚀`, `🌐`, `⚙️`, `🎬`, `🎧`, `⚡`, `🔥`, `🏆`, `📱`, `💡`, `☕`).
@@ -55,6 +55,7 @@ When switching between multi-monitor setups, docking stations, unplugging extern
 * 🖼️ **Native High-Res Executable Icon Extraction:** Automatically extracts and renders the authentic high-resolution application icon from each process's `.exe` and `.lnk` shortcut on disk with concurrent memory caching.
 * ⌨️ **Standalone Global Hotkey Dispatcher:** Dedicated Win32 message-only thread (`HWND_MESSAGE`) enables zero-latency global shortcuts (`Ctrl+Alt+1..5`) without blocking or relying on the GUI thread.
 * 🪟 **System Tray Quick-Switch & 1-Click `.exe` Launch:** Runs cleanly in the background with a system tray icon, auto-minimizaton, and single-file portable release distribution (`publish/WorkspaceSwitcher.UI.exe`).
+* 📦 **One-Click Windows Installer:** Inno Setup based `WorkspaceSwitcher-<version>-Setup.exe` with a self-contained payload (no .NET runtime required), a fully selectable destination folder, an optional desktop shortcut, and a checked-by-default **Launch Workspace Switcher** checkbox on the final wizard page. Wizard UI in English or Simplified Chinese.
 * 🚀 **Auto-Launch Missing Apps:** Optionally launches closed applications using their saved disk executable paths during layout restoration.
 * 🧹 **Clean Workspace Switching:** Option to automatically close open applications from the previous workspace when switching to a new layout.
 * 🟢 **Active Layout Tracking:** Live visual status badges and active indicators across profiles and the settings bar.
@@ -304,7 +305,8 @@ Profiles are stored in `%APPDATA%\WorkspaceSwitcher\Profiles\<ProfileName>.json`
 
 ### 1. Prerequisites
 * **Windows 10 / 11** (x64 / ARM64)
-* **.NET 8.0 SDK** (if building from source).
+* **No runtime required** for the installer or the portable executable - both ship a self-contained .NET 8 build.
+* **.NET 8.0 SDK** (only if building from source).
 
 > **💡 Quick Install via Windows Package Manager (winget):**
 > ```powershell
@@ -314,7 +316,19 @@ Profiles are stored in `%APPDATA%\WorkspaceSwitcher\Profiles\<ProfileName>.json`
 
 ---
 
-### 2. Launch Standalone Executable (Fastest)
+### 2. Install With the Installer (Recommended)
+1. Download `WorkspaceSwitcher-<version>-Setup.exe` from the **Releases** page of this repository (or [build it yourself](#-releases--installer-builds)).
+2. Run it. The first page selects the install mode (*for me only* - no UAC - or *for all users*), the **Select Destination Location** page lets you install into any folder, and the **Select Additional Tasks** page offers a desktop shortcut.
+3. On the final page, **Launch Workspace Switcher** is checked by default - clear it if the app should stay closed after installation.
+
+> **💡 Notes**
+> * A running tray instance is closed (after a confirmation prompt) before the program files are replaced, so upgrading over a running copy works.
+> * Uninstalling removes the program files, shortcuts and the *Apps & features* entry. Your profiles in `%APPDATA%\WorkspaceSwitcher` are kept.
+> * Unattended: `WorkspaceSwitcher-<version>-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /DIR="D:\Tools\Workspace Switcher"`.
+
+---
+
+### 3. Launch Standalone Executable (Fastest)
 A ready-to-run portable single-file executable is generated in `./publish`:
 ```powershell
 ./publish/WorkspaceSwitcher.UI.exe
@@ -323,7 +337,7 @@ A ready-to-run portable single-file executable is generated in `./publish`:
 
 ---
 
-### 3. Build & Run From Source
+### 4. Build & Run From Source
 
 1. **Clone the repository:**
    ```powershell
@@ -375,10 +389,17 @@ A ready-to-run portable single-file executable is generated in `./publish`:
 workspace-switcher/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                           # GitHub Actions CI: Build, Test & Artifacts
+│       ├── ci.yml                           # GitHub Actions CI: Build, Test & Artifacts
+│       └── release.yml                      # Tagged builds: installer -> GitHub Release
 ├── .gitignore
 ├── README.md
 ├── WorkspaceSwitcher.sln
+├── installer/                               # Inno Setup installer sources
+│   ├── WorkspaceSwitcher.iss                # Wizard: destination folder, tasks, launch entry
+│   ├── build-installer.ps1                  # Publishes the GUI, then compiles the Setup.exe
+│   └── languages/
+│       └── ChineseSimplified.isl            # Official Inno Setup Simplified Chinese translation
+├── dist/                                    # Generated Setup.exe (gitignored)
 ├── publish/                                 # Standalone single-file Release executable
 │   └── WorkspaceSwitcher.UI.exe
 ├── src/
@@ -433,6 +454,35 @@ workspace-switcher/
         ├── AppIdentityHelperTests.cs        # Process identity & path resolution
         └── WindowPlacementTests.cs          # Window rect & Win32 placement tests
 ```
+
+---
+
+## 📦 Releases & Installer Builds
+
+`installer/WorkspaceSwitcher.iss` (Inno Setup 6) and `installer/build-installer.ps1` produce `dist/WorkspaceSwitcher-<version>-Setup.exe`:
+
+```powershell
+# Inno Setup 6.5+ is required:  winget install JRSoftware.InnoSetup
+pwsh -File installer/build-installer.ps1 -Version 1.2.3
+
+# reuse an existing publish directory (skip the dotnet publish stage)
+pwsh -File installer/build-installer.ps1 -Version 1.2.3 -SkipPublish
+```
+
+The script publishes `src/WorkspaceSwitcher.UI` as a self-contained Windows x64 single-file build (no .NET runtime on the target machine, also runs on ARM64 through x64 emulation) and compiles the wizard on top of it. Without `-Version` the latest `v*` git tag is used.
+
+| Wizard behaviour | Detail |
+| :--- | :--- |
+| Install mode | Per-user by default (no UAC prompt); *install for all users* on the first page or `/ALLUSERS` on the command line |
+| Destination folder | **Select Destination Location** page, defaulting to `%LocalAppData%\Programs\Workspace Switcher` (per-user) or `C:\Program Files\Workspace Switcher` (all users); any folder can be chosen |
+| Additional tasks | Optional desktop shortcut (unchecked by default) |
+| Launch after install | **Launch Workspace Switcher** checkbox on the final page, checked by default |
+| Running instance | Setup and the uninstaller offer to close a running tray instance first (the app hides to the tray, so the Windows Restart Manager cannot close it) |
+| Uninstall | Removes program files, shortcuts and the *Apps & features* entry; `%APPDATA%\WorkspaceSwitcher` profiles are kept |
+| Wizard language | Simplified Chinese on Chinese Windows, English otherwise, `/LANG=english` / `/LANG=chinesesimplified` to force |
+| Unattended | `WorkspaceSwitcher-<version>-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR="D:\Tools\Workspace Switcher"` |
+
+Pushing a `v<version>` tag (`git tag v1.2.3 && git push origin v1.2.3`) runs `.github/workflows/release.yml`: build, unit tests, installer compilation, and a GitHub Release with the Setup executable attached. Every `ci.yml` run also compiles the installer and uploads it as a build artifact.
 
 ---
 

@@ -7,6 +7,9 @@
 [Ll]og/
 [Ll]ogs/
 
+# Installer build output (installer/build-installer.ps1)
+dist/
+
 # Visual Studio files
 .vs/
 *.user

@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 1.2.3). Defaults to the latest v* tag.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    name: Build Windows Installer
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      with:
+        # git describe (used to derive the version) needs the tags
+        fetch-depth: 0
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Build Solution (Release)
+      run: dotnet build WorkspaceSwitcher.sln --configuration Release --nologo
+
+    - name: Run Unit Tests
+      run: dotnet test WorkspaceSwitcher.sln --configuration Release --no-build --verbosity normal
+
+    - name: Install Inno Setup
+      run: choco install innosetup --no-progress -y
+
+    - name: Build Installer
+      run: ./installer/build-installer.ps1 -Version "${{ inputs.version }}"
+
+    - name: Upload Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WorkspaceSwitcher-Setup
+        path: ./dist/*.exe
+
+    - name: Publish GitHub Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./dist/*.exe
+        generate_release_notes: true
