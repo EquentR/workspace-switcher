@@ -73,6 +73,9 @@ public partial class MainWindow : Window
         DetailExportButton.ToolTip = localizer.Get("Detail.ExportTooltip");
         UpdateButtonText.Text = localizer.Get("Detail.UpdateButton");
 
+        WindowsTabText.Text = localizer.Get("WindowDetail.TabTitle");
+        WindowsListTitleText.Text = localizer.Get("WindowDetail.ListTitle");
+
         RestoreSettingsTitleText.Text = localizer.Get("RestoreSettings.Title");
         AutoLaunchLabelText.Text = localizer.Get("RestoreSettings.AutoLaunchLabel");
         AutoLaunchDescriptionText.Text = localizer.Get("RestoreSettings.AutoLaunchDescription");

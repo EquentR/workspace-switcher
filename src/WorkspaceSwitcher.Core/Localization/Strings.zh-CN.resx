@@ -250,4 +250,65 @@
     <value>yyyy年M月d日 HH:mm</value>
     <comment>超过近期窗口的日期时间格式模式（.NET 自定义格式）。</comment>
   </data>
+  <!-- 窗口详情区域（TASK-04）。窗口状态枚举值与显示器数据保持原样，仅显示文本汉化。 -->
+  <data name="WindowDetail.TabTitle" xml:space="preserve">
+    <value>应用窗口</value>
+  </data>
+  <data name="WindowDetail.ListTitle" xml:space="preserve">
+    <value>此工作区中的窗口</value>
+  </data>
+  <data name="WindowDetail.StateLabel" xml:space="preserve">
+    <value>目标窗口状态：</value>
+  </data>
+  <data name="WindowDetail.MonitorLabel" xml:space="preserve">
+    <value>目标显示器：</value>
+  </data>
+  <data name="WindowDetail.LeftLabel" xml:space="preserve">
+    <value>左侧位置（X）</value>
+  </data>
+  <data name="WindowDetail.TopLabel" xml:space="preserve">
+    <value>顶部位置（Y）</value>
+  </data>
+  <data name="WindowDetail.WidthLabel" xml:space="preserve">
+    <value>宽度（像素）</value>
+  </data>
+  <data name="WindowDetail.HeightLabel" xml:space="preserve">
+    <value>高度（像素）</value>
+  </data>
+  <data name="WindowDetail.AutoSaveHint" xml:space="preserve">
+    <value>更改会自动保存到工作区配置。</value>
+  </data>
+  <data name="WindowDetail.RemoveButton" xml:space="preserve">
+    <value>从工作区移除</value>
+  </data>
+  <data name="WindowDetail.SystemProcess" xml:space="preserve">
+    <value>系统 / 后台进程</value>
+    <comment>没有可执行路径的窗口显示的回退说明。</comment>
+  </data>
+  <!-- 窗口状态显示名（TASK-04）。持久化的 WindowState 枚举名与值保持不变，仅界面显示翻译。 -->
+  <data name="WindowState.Normal" xml:space="preserve">
+    <value>正常</value>
+    <comment>持久化枚举值 WindowState.Normal 的显示标签。</comment>
+  </data>
+  <data name="WindowState.Maximized" xml:space="preserve">
+    <value>最大化</value>
+    <comment>持久化枚举值 WindowState.Maximized 的显示标签。</comment>
+  </data>
+  <data name="WindowState.Minimized" xml:space="preserve">
+    <value>最小化</value>
+    <comment>持久化枚举值 WindowState.Minimized 的显示标签。</comment>
+  </data>
+  <!-- 显示器显示名（TASK-04）。由结构化数据格式化：索引、主显示器标识、分辨率和虚拟桌面坐标。 -->
+  <data name="Monitor.Short" xml:space="preserve">
+    <value>显示器 {0}</value>
+    <comment>紧凑显示器名称；{0} 为显示器索引。</comment>
+  </data>
+  <data name="Monitor.Primary" xml:space="preserve">
+    <value>显示器 {0}（主显示器，{1}×{2}）</value>
+    <comment>主显示器名称：{0} 索引，{1} 宽度，{2} 高度。</comment>
+  </data>
+  <data name="Monitor.NonPrimary" xml:space="preserve">
+    <value>显示器 {0}（{1}×{2}，位置 {3}, {4}）</value>
+    <comment>非主显示器名称：{0} 索引，{1} 宽度，{2} 高度，{3} 左坐标，{4} 上坐标；负坐标保留负号。</comment>
+  </data>
 </root>

@@ -263,4 +263,68 @@
     <value>dd. MMM, HH:mm</value>
     <comment>.NET custom date/time pattern for timestamps older than the recent window.</comment>
   </data>
+  <!-- Window details area (TASK-04). Window-state enum values and monitor data stay
+       original; only the rendered display text is localized. -->
+  <data name="WindowDetail.TabTitle" xml:space="preserve">
+    <value>Application Windows</value>
+  </data>
+  <data name="WindowDetail.ListTitle" xml:space="preserve">
+    <value>Windows in this workspace</value>
+  </data>
+  <data name="WindowDetail.StateLabel" xml:space="preserve">
+    <value>Target Window State:</value>
+  </data>
+  <data name="WindowDetail.MonitorLabel" xml:space="preserve">
+    <value>Target Display / Monitor:</value>
+  </data>
+  <data name="WindowDetail.LeftLabel" xml:space="preserve">
+    <value>Left (X)</value>
+  </data>
+  <data name="WindowDetail.TopLabel" xml:space="preserve">
+    <value>Top (Y)</value>
+  </data>
+  <data name="WindowDetail.WidthLabel" xml:space="preserve">
+    <value>Width (px)</value>
+  </data>
+  <data name="WindowDetail.HeightLabel" xml:space="preserve">
+    <value>Height (px)</value>
+  </data>
+  <data name="WindowDetail.AutoSaveHint" xml:space="preserve">
+    <value>Changes auto-save directly to your workspace profile</value>
+  </data>
+  <data name="WindowDetail.RemoveButton" xml:space="preserve">
+    <value>Remove from Workspace</value>
+  </data>
+  <data name="WindowDetail.SystemProcess" xml:space="preserve">
+    <value>System / Background Process</value>
+    <comment>Fallback shown for windows without an executable path.</comment>
+  </data>
+  <!-- Window state display names (TASK-04). The persisted WindowState enum names and
+       values stay unchanged; these labels only render in the UI. -->
+  <data name="WindowState.Normal" xml:space="preserve">
+    <value>Normal</value>
+    <comment>Display label for the persisted enum value WindowState.Normal.</comment>
+  </data>
+  <data name="WindowState.Maximized" xml:space="preserve">
+    <value>Maximized</value>
+    <comment>Display label for the persisted enum value WindowState.Maximized.</comment>
+  </data>
+  <data name="WindowState.Minimized" xml:space="preserve">
+    <value>Minimized</value>
+    <comment>Display label for the persisted enum value WindowState.Minimized.</comment>
+  </data>
+  <!-- Monitor display names (TASK-04). Formatted from structured monitor data: index,
+       primary flag, resolution and virtual-desktop position. -->
+  <data name="Monitor.Short" xml:space="preserve">
+    <value>Monitor {0}</value>
+    <comment>Compact monitor name; {0} is the monitor index.</comment>
+  </data>
+  <data name="Monitor.Primary" xml:space="preserve">
+    <value>Monitor {0} (Primary - {1}×{2})</value>
+    <comment>Primary monitor name: {0} index, {1} width, {2} height.</comment>
+  </data>
+  <data name="Monitor.NonPrimary" xml:space="preserve">
+    <value>Monitor {0} ({1}×{2} at {3},{4})</value>
+    <comment>Non-primary monitor name: {0} index, {1} width, {2} height, {3} left, {4} top; negative coordinates keep their minus sign.</comment>
+  </data>
 </root>

@@ -372,7 +372,8 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="🗔 Application Windows" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="🗔 " FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="WindowsTabText" Text="Application Windows" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                 <Border Background="#1E2642" CornerRadius="8" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding SelectedProfile.WindowCount, FallbackValue='0'}" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
                                 </Border>
@@ -428,7 +429,7 @@
                         <!-- Title + View Pill -->
                         <Grid Grid.Row="0" Margin="0,0,0,12">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="Windows in this workspace" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="WindowsListTitleText" Text="Windows in this workspace" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                 <Border Background="#1E2642" CornerRadius="8" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding SelectedProfile.WindowCount, FallbackValue='0'}" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
                                 </Border>
@@ -520,10 +521,10 @@
                                                         <Style TargetType="Border">
                                                             <Setter Property="Background" Value="{StaticResource NormalStateBg}"/>
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding StateText}" Value="Maximized">
+                                                                <DataTrigger Binding="{Binding StateName}" Value="Maximized">
                                                                     <Setter Property="Background" Value="{StaticResource MaximizedStateBg}"/>
                                                                 </DataTrigger>
-                                                                <DataTrigger Binding="{Binding StateText}" Value="Minimized">
+                                                                <DataTrigger Binding="{Binding StateName}" Value="Minimized">
                                                                     <Setter Property="Background" Value="{StaticResource MinimizedStateBg}"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
@@ -535,10 +536,10 @@
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Foreground" Value="{StaticResource NormalStateText}"/>
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding StateText}" Value="Maximized">
+                                                                    <DataTrigger Binding="{Binding StateName}" Value="Maximized">
                                                                         <Setter Property="Foreground" Value="{StaticResource MaximizedStateText}"/>
                                                                     </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding StateText}" Value="Minimized">
+                                                                    <DataTrigger Binding="{Binding StateName}" Value="Minimized">
                                                                         <Setter Property="Foreground" Value="{StaticResource MinimizedStateText}"/>
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
@@ -583,19 +584,21 @@
 
                                                     <!-- State Selector -->
                                                     <StackPanel Grid.Column="0">
-                                                        <TextBlock Text="Target Window State:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                                                        <TextBlock Text="{Binding StateLabel}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                                                         <ComboBox Style="{StaticResource DarkGlassComboBox}"
-                                                                  ItemsSource="{Binding AvailableStates}" 
-                                                                  SelectedItem="{Binding State, Mode=TwoWay}"/>
+                                                                  ItemsSource="{Binding StateOptions}"
+                                                                  DisplayMemberPath="Display"
+                                                                  SelectedValuePath="Value"
+                                                                  SelectedValue="{Binding State, Mode=TwoWay}"/>
                                                     </StackPanel>
 
                                                     <!-- Monitor Selector -->
                                                     <StackPanel Grid.Column="2">
-                                                        <TextBlock Text="Target Display / Monitor:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                                                        <TextBlock Text="{Binding MonitorLabel}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                                                         <ComboBox Style="{StaticResource DarkGlassComboBox}"
-                                                                  ItemsSource="{Binding AvailableMonitors}" 
+                                                                  ItemsSource="{Binding AvailableMonitors}"
                                                                   SelectedItem="{Binding SelectedMonitor, Mode=TwoWay}"
-                                                                  DisplayMemberPath="Name"/>
+                                                                  DisplayMemberPath="Display"/>
                                                     </StackPanel>
                                                 </Grid>
 
@@ -612,37 +615,44 @@
                                                     </Grid.ColumnDefinitions>
 
                                                     <StackPanel Grid.Column="0">
-                                                        <TextBlock Text="Left (X)" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding LeftLabel}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
                                                         <TextBox Style="{StaticResource DarkGlassTextBox}" Text="{Binding Left, UpdateSourceTrigger=LostFocus}" Padding="6,4" FontSize="11"/>
                                                     </StackPanel>
 
                                                     <StackPanel Grid.Column="2">
-                                                        <TextBlock Text="Top (Y)" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding TopLabel}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
                                                         <TextBox Style="{StaticResource DarkGlassTextBox}" Text="{Binding Top, UpdateSourceTrigger=LostFocus}" Padding="6,4" FontSize="11"/>
                                                     </StackPanel>
 
                                                     <StackPanel Grid.Column="4">
-                                                        <TextBlock Text="Width (px)" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding WidthLabel}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
                                                         <TextBox Style="{StaticResource DarkGlassTextBox}" Text="{Binding Width, UpdateSourceTrigger=LostFocus}" Padding="6,4" FontSize="11"/>
                                                     </StackPanel>
 
                                                     <StackPanel Grid.Column="6">
-                                                        <TextBlock Text="Height (px)" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding HeightLabel}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,2"/>
                                                         <TextBox Style="{StaticResource DarkGlassTextBox}" Text="{Binding Height, UpdateSourceTrigger=LostFocus}" Padding="6,4" FontSize="11"/>
                                                     </StackPanel>
                                                 </Grid>
 
                                                 <!-- Row 3: Actions & Auto-Save hint -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBlock Text="⚡ Changes auto-save directly to your workspace profile" FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
-                                                    
-                                                    <Button Style="{StaticResource DarkSecondaryButton}" 
-                                                            Content="🗑️ Remove from Workspace" 
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock Text="⚡ " FontSize="10.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                                        <TextBlock Text="{Binding AutoSaveHint}" FontSize="10.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                                    </StackPanel>
+
+                                                    <Button Style="{StaticResource DarkSecondaryButton}"
                                                             HorizontalAlignment="Right"
                                                             Foreground="#F87171"
                                                             BorderBrush="#7F1D1D"
                                                             Padding="10,4" FontSize="10.5"
-                                                            Command="{Binding RemoveWindowCommand}"/>
+                                                            Command="{Binding RemoveWindowCommand}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="🗑️ " FontSize="10.5"/>
+                                                            <TextBlock Text="{Binding RemoveButtonText}" FontSize="10.5"/>
+                                                        </StackPanel>
+                                                    </Button>
                                                 </Grid>
                                             </Grid>
                                         </Border>

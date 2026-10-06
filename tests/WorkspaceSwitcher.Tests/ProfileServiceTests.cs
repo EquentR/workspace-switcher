@@ -278,4 +278,46 @@ public class ProfileServiceTests : IDisposable
         Assert.Equal(expectedModifiers, HotkeyHelper.ParseModifiers(loaded.HotkeyModifier));
         Assert.Equal(expectedVk, HotkeyHelper.ParseVirtualKey(loaded.HotkeyKey, 0));
     }
+
+    [Theory]
+    [InlineData(UiLanguage.English)]
+    [InlineData(UiLanguage.ChineseSimplified)]
+    public void Profile_AfterRenderingLocalizedWindowDetails_KeepsStateEnumAndNegativeCoordinates(UiLanguage language)
+    {
+        var localizer = new Localizer(language);
+        var window = new WindowInfo
+        {
+            ProcessName = "devenv",
+            ExecutablePath = @"C:\Program Files\Microsoft Visual Studio\2022\devenv.exe",
+            WindowTitle = "解决方案资源管理器 - 真实标题 {x}",
+            Placement = new WindowPlacementInfo
+            {
+                State = WindowState.Minimized,
+                NormalPosition = new WindowRect(-1920, -8, -8, 1032)
+            },
+            Bounds = new WindowRect(-1920, -8, -8, 1032)
+        };
+
+        // The window-details UI renders its display text from the facade in the effective
+        // language before saving; none of that text may influence the saved layout data.
+        _ = WindowDetailsDisplay.StateText(localizer, window.Placement.State);
+        _ = WindowDetailsDisplay.MonitorName(localizer, 2, false, 1920, 1080, -1920, 0);
+        _ = WindowDetailsDisplay.MonitorShortText(localizer, 2);
+
+        var profile = new WorkspaceProfile("窗口详情") { Windows = { window } };
+        _profileService.SaveProfile(profile);
+
+        string json = File.ReadAllText(Directory.GetFiles(_testDirectory, "*.json").Single());
+        Assert.Contains("\"Minimized\"", json);
+        Assert.Contains("-1920", json);
+
+        var loaded = _profileService.LoadProfile("窗口详情");
+        Assert.NotNull(loaded);
+        var loadedWindow = Assert.Single(loaded.Windows);
+        Assert.Equal(WindowState.Minimized, loadedWindow.Placement.State);
+        Assert.Equal(-1920, loadedWindow.Placement.NormalPosition.Left);
+        Assert.Equal(-8, loadedWindow.Placement.NormalPosition.Top);
+        Assert.Equal(1912, loadedWindow.Placement.NormalPosition.Width);
+        Assert.Equal(1040, loadedWindow.Placement.NormalPosition.Height);
+    }
 }

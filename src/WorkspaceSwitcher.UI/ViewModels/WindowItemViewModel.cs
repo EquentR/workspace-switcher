@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
 using WorkspaceSwitcher.Core.Services;
 using WorkspaceSwitcher.UI.Services;
@@ -22,7 +23,7 @@ public class WindowItemViewModel : INotifyPropertyChanged
     public string Subtitle => !string.IsNullOrWhiteSpace(Model.ExecutablePath) ? System.IO.Path.GetFileName(Model.ExecutablePath) : Model.ProcessName;
     public string ProcessName => Model.ProcessName;
     public string WindowTitle => string.IsNullOrWhiteSpace(Model.WindowTitle) ? Model.DisplayName : Model.WindowTitle;
-    public string ExecutablePath => Model.ExecutablePath ?? "System / Background Process";
+    public string ExecutablePath => Model.ExecutablePath ?? Localizer.Current.Get("WindowDetail.SystemProcess");
 
     public bool IsExpanded
     {
@@ -47,23 +48,23 @@ public class WindowItemViewModel : INotifyPropertyChanged
                 Model.Placement.State = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(StateText));
+                OnPropertyChanged(nameof(StateName));
                 _onChanged?.Invoke();
             }
         }
     }
 
-    public string StateText => State.ToString();
+    /// <summary>Localized status label; the persisted enum value stays in <see cref="State"/>.</summary>
+    public string StateText => WindowDetailsDisplay.StateText(Localizer.Current, State);
 
-    public IReadOnlyList<WindowState> AvailableStates { get; } = new[]
-    {
-        WindowState.Normal,
-        WindowState.Maximized,
-        WindowState.Minimized
-    };
+    /// <summary>Stable enum name driving the state badge styling; never translated.</summary>
+    public string StateName => State.ToString();
 
-    public List<MonitorOption> AvailableMonitors { get; }
+    public IReadOnlyList<WindowStateOption> StateOptions { get; }
 
-    public MonitorOption? SelectedMonitor
+    public List<MonitorDisplayOption> AvailableMonitors { get; }
+
+    public MonitorDisplayOption? SelectedMonitor
     {
         get
         {
@@ -71,8 +72,8 @@ public class WindowItemViewModel : INotifyPropertyChanged
             int midX = p.Left + (p.Width / 2);
             int midY = p.Top + (p.Height / 2);
 
-            return AvailableMonitors.FirstOrDefault(m => midX >= m.Left && midX < m.Left + m.Width && midY >= m.Top && midY < m.Top + m.Height)
-                ?? AvailableMonitors.FirstOrDefault(m => p.Left >= m.Left && p.Left < m.Left + m.Width)
+            return AvailableMonitors.FirstOrDefault(m => midX >= m.Monitor.Left && midX < m.Monitor.Left + m.Monitor.Width && midY >= m.Monitor.Top && midY < m.Monitor.Top + m.Monitor.Height)
+                ?? AvailableMonitors.FirstOrDefault(m => p.Left >= m.Monitor.Left && p.Left < m.Monitor.Left + m.Monitor.Width)
                 ?? AvailableMonitors.FirstOrDefault();
         }
         set
@@ -80,10 +81,10 @@ public class WindowItemViewModel : INotifyPropertyChanged
             if (value != null)
             {
                 var currentMon = SelectedMonitor;
-                if (currentMon != null && currentMon.Index != value.Index)
+                if (currentMon != null && currentMon.Monitor.Index != value.Monitor.Index)
                 {
-                    int offsetX = value.Left - currentMon.Left;
-                    int offsetY = value.Top - currentMon.Top;
+                    int offsetX = value.Monitor.Left - currentMon.Monitor.Left;
+                    int offsetY = value.Monitor.Top - currentMon.Monitor.Top;
 
                     Model.Placement.NormalPosition.Left += offsetX;
                     Model.Placement.NormalPosition.Right += offsetX;
@@ -111,7 +112,7 @@ public class WindowItemViewModel : INotifyPropertyChanged
         get
         {
             var mon = SelectedMonitor;
-            return mon != null ? $"Monitor {mon.Index}" : "Monitor 1";
+            return WindowDetailsDisplay.MonitorShortText(Localizer.Current, mon?.Monitor.Index ?? 1);
         }
     }
 
@@ -190,6 +191,17 @@ public class WindowItemViewModel : INotifyPropertyChanged
 
     public ImageSource? AppIcon { get; }
 
+    // Static window-details labels (TASK-04) consumed by the item template. All text
+    // comes from the localization facade; the view holds no format fragments.
+    public string StateLabel => Localizer.Current.Get("WindowDetail.StateLabel");
+    public string MonitorLabel => Localizer.Current.Get("WindowDetail.MonitorLabel");
+    public string LeftLabel => Localizer.Current.Get("WindowDetail.LeftLabel");
+    public string TopLabel => Localizer.Current.Get("WindowDetail.TopLabel");
+    public string WidthLabel => Localizer.Current.Get("WindowDetail.WidthLabel");
+    public string HeightLabel => Localizer.Current.Get("WindowDetail.HeightLabel");
+    public string AutoSaveHint => Localizer.Current.Get("WindowDetail.AutoSaveHint");
+    public string RemoveButtonText => Localizer.Current.Get("WindowDetail.RemoveButton");
+
     public ICommand ToggleExpandCommand { get; }
     public ICommand RemoveWindowCommand { get; }
 
@@ -203,7 +215,10 @@ public class WindowItemViewModel : INotifyPropertyChanged
         _onRemove = onRemove;
 
         AppIcon = IconHelper.GetIconForExecutable(windowInfo.ExecutablePath, windowInfo.ProcessName);
-        AvailableMonitors = MonitorService.GetConnectedMonitors();
+        AvailableMonitors = MonitorService.GetConnectedMonitors()
+            .Select(m => WindowDetailsDisplay.CreateMonitorOption(Localizer.Current, m))
+            .ToList();
+        StateOptions = WindowDetailsDisplay.CreateStateOptions(Localizer.Current);
 
         ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
         RemoveWindowCommand = new RelayCommand(() => _onRemove?.Invoke(this));
