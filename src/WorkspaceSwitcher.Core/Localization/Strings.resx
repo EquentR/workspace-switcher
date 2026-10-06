@@ -422,4 +422,156 @@
   <data name="Status.TaskbarScopeError" xml:space="preserve">
     <value>Error updating static pin: {0}</value>
   </data>
+  <!-- Restore/switch, update, delete and import/export result status (TASK-06).
+       Complete templates only. Shared parameter order for the restore/switch family:
+       {0} workspace name, {1} restored count, {2} closed count, {3} old workspace name,
+       {4} taskbar pin count, {5} switch-source display name. -->
+  <data name="Status.SwitchFailed" xml:space="preserve">
+    <value>Error switching workspace: {0}</value>
+  </data>
+  <data name="Status.RestoreResult" xml:space="preserve">
+    <value>Restored '{0}' ({1} windows repositioned).</value>
+  </data>
+  <data name="Status.RestoreResultTaskbar" xml:space="preserve">
+    <value>Restored '{0}' ({1} windows repositioned, taskbar switched to {4} pins).</value>
+  </data>
+  <data name="Status.RestoreResultFromSource" xml:space="preserve">
+    <value>[{5}] Restored '{0}' ({1} windows repositioned).</value>
+  </data>
+  <data name="Status.RestoreResultTaskbarFromSource" xml:space="preserve">
+    <value>[{5}] Restored '{0}' ({1} windows repositioned, taskbar switched to {4} pins).</value>
+  </data>
+  <data name="Status.SwitchResult" xml:space="preserve">
+    <value>Switched to '{0}' ({1} repositioned, {2} closed from '{3}').</value>
+  </data>
+  <data name="Status.SwitchResultTaskbar" xml:space="preserve">
+    <value>Switched to '{0}' ({1} repositioned, {2} closed from '{3}', taskbar switched to {4} pins).</value>
+  </data>
+  <data name="Status.SwitchResultFromSource" xml:space="preserve">
+    <value>[{5}] Switched to '{0}' ({1} repositioned, {2} closed from '{3}').</value>
+  </data>
+  <data name="Status.SwitchResultTaskbarFromSource" xml:space="preserve">
+    <value>[{5}] Switched to '{0}' ({1} repositioned, {2} closed from '{3}', taskbar switched to {4} pins).</value>
+  </data>
+  <data name="Status.UpdateLayoutSuccess" xml:space="preserve">
+    <value>Updated '{0}' with current layout ({1} windows).</value>
+    <comment>{0} workspace name, {1} window count.</comment>
+  </data>
+  <data name="Status.UpdateLayoutSuccessPins" xml:space="preserve">
+    <value>Updated '{0}' with current layout ({1} windows, {2} taskbar pin(s)).</value>
+    <comment>{0} workspace name, {1} window count, {2} pinned-item count.</comment>
+  </data>
+  <data name="Status.UpdateLayoutFailed" xml:space="preserve">
+    <value>Error updating profile: {0}</value>
+  </data>
+  <data name="Status.DeleteSuccess" xml:space="preserve">
+    <value>Workspace '{0}' deleted.</value>
+  </data>
+  <data name="Status.DeleteFailed" xml:space="preserve">
+    <value>Error deleting profile: {0}</value>
+  </data>
+  <data name="Status.ExportSuccess" xml:space="preserve">
+    <value>Exported workspace '{0}' to {1}.</value>
+    <comment>{0} workspace name, {1} user file name (verbatim).</comment>
+  </data>
+  <data name="Status.ExportFailed" xml:space="preserve">
+    <value>Error exporting profile: {0}</value>
+  </data>
+  <data name="Status.ImportSuccess" xml:space="preserve">
+    <value>Imported workspace '{0}' successfully.</value>
+  </data>
+  <data name="Status.ImportFailed" xml:space="preserve">
+    <value>Error importing profile: {0}</value>
+  </data>
+  <!-- Switch-source display names; the internal identifiers Hotkey/Tray stay unchanged. -->
+  <data name="SwitchSource.Hotkey" xml:space="preserve">
+    <value>Hotkey</value>
+  </data>
+  <data name="SwitchSource.Tray" xml:space="preserve">
+    <value>Tray</value>
+  </data>
+  <!-- Known business failure explanations, mapped via stable reason identifiers. -->
+  <data name="Error.NameEmpty" xml:space="preserve">
+    <value>Profile name cannot be empty.</value>
+  </data>
+  <data name="Error.ProfileMissing" xml:space="preserve">
+    <value>Workspace profile does not exist.</value>
+  </data>
+  <data name="Error.SourceFileMissing" xml:space="preserve">
+    <value>Source file not found.</value>
+  </data>
+  <data name="Error.InvalidProfileFormat" xml:space="preserve">
+    <value>Invalid workspace profile format.</value>
+  </data>
+  <data name="Error.HotkeyRegistrationFailed" xml:space="preserve">
+    <value>Hotkey registration failed.</value>
+  </data>
+  <!-- Application exception dialogs (TASK-06). {0} original message, {1} stack trace. -->
+  <data name="Error.UiTitle" xml:space="preserve">
+    <value>Workspace Switcher - Error</value>
+  </data>
+  <data name="Error.UiMessage" xml:space="preserve">
+    <value>UI Error: {0}&#10;&#10;{1}</value>
+  </data>
+  <data name="Error.FatalTitle" xml:space="preserve">
+    <value>Workspace Switcher - Fatal Error</value>
+  </data>
+  <data name="Error.FatalMessage" xml:space="preserve">
+    <value>Fatal Error: {0}&#10;&#10;{1}</value>
+  </data>
+  <!-- File dialogs (TASK-06). Only descriptions localize; the *.json / *.* filter
+       patterns, extensions and user file names stay verbatim. -->
+  <data name="FileDialog.ImportTitle" xml:space="preserve">
+    <value>Import Workspace Profile</value>
+  </data>
+  <data name="FileDialog.ExportTitle" xml:space="preserve">
+    <value>Export Workspace Profile '{0}'</value>
+  </data>
+  <data name="FileDialog.ProfileFilter" xml:space="preserve">
+    <value>Workspace Profile (*.json)</value>
+  </data>
+  <data name="FileDialog.AllFilesFilter" xml:space="preserve">
+    <value>All Files (*.*)</value>
+  </data>
+  <!-- Tray icon (TASK-06). Menu emojis and the brand name stay in the view. -->
+  <data name="Tray.HoverText" xml:space="preserve">
+    <value>Workspace / Window Layout Switcher</value>
+  </data>
+  <data name="Tray.QuickSwitchMenu" xml:space="preserve">
+    <value>Quick Switch Profile</value>
+  </data>
+  <data name="Tray.NoWorkspacesHint" xml:space="preserve">
+    <value>No profiles saved yet</value>
+  </data>
+  <data name="Tray.SnapshotMenu" xml:space="preserve">
+    <value>Quick Snapshot Current</value>
+  </data>
+  <data name="Tray.SnapshotDescription" xml:space="preserve">
+    <value>Quick snapshot from tray icon</value>
+    <comment>Description of new tray snapshots only; existing descriptions are never rewritten.</comment>
+  </data>
+  <data name="Tray.OpenMenu" xml:space="preserve">
+    <value>Open Dashboard</value>
+  </data>
+  <data name="Tray.ExitMenu" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Tray.SwitchNotificationTitle" xml:space="preserve">
+    <value>Workspace Switched</value>
+  </data>
+  <data name="Tray.SwitchNotificationMessage" xml:space="preserve">
+    <value>Switched to '{0}'.</value>
+  </data>
+  <data name="Tray.SnapshotNotificationTitle" xml:space="preserve">
+    <value>Snapshot Saved</value>
+  </data>
+  <data name="Tray.SnapshotNotificationMessage" xml:space="preserve">
+    <value>Saved current layout as '{0}' ({1} windows).</value>
+  </data>
+  <data name="Tray.CloseToTrayTitle" xml:space="preserve">
+    <value>Workspace Switcher Active</value>
+  </data>
+  <data name="Tray.CloseToTrayMessage" xml:space="preserve">
+    <value>App is running in the background. Use global hotkeys (Ctrl+Alt+1..5) or the tray icon.</value>
+  </data>
 </root>

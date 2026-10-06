@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using WorkspaceSwitcher.Core;
 using WorkspaceSwitcher.Core.Hotkeys;
 using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
@@ -388,5 +389,99 @@ public class ProfileServiceTests : IDisposable
         var loadedUntouched = loaded.Taskbar.PinnedItems[1];
         Assert.True(loadedUntouched.IsStatic);
         Assert.Equal("Game Studio.lnk", loadedUntouched.ShortcutFileName);
+    }
+
+    [Fact]
+    public async Task SaveProfile_EmptyName_ReportsNameEmptyReasonWithCliVerbatimMessage()
+    {
+        var localizer = new Localizer(UiLanguage.ChineseSimplified);
+
+        var exception = Assert.Throws<OperationFailureException>(
+            () => _profileService.SaveProfile(new WorkspaceProfile("   ")));
+
+        Assert.Equal(OperationFailureReason.NameEmpty, exception.Reason);
+        // The CLI prints ex.Message verbatim: it must stay byte-identical to the
+        // former ArgumentException output, "(Parameter 'profile')" suffix included.
+        Assert.Equal("Profile name cannot be empty. (Parameter 'profile')", exception.Message);
+
+        var asyncException = await Assert.ThrowsAsync<OperationFailureException>(
+            () => _profileService.SaveProfileAsync(new WorkspaceProfile(" ")));
+        Assert.Equal(exception.Message, asyncException.Message);
+        Assert.Equal(OperationFailureReason.NameEmpty, asyncException.Reason);
+
+        // The localized explanation maps by reason and never carries the suffix.
+        Assert.Equal("名称为空。", OperationDisplay.ErrorDetail(localizer, exception));
+        Assert.Equal(
+            "Profile name cannot be empty.",
+            OperationDisplay.ErrorDetail(new Localizer(UiLanguage.English), exception));
+    }
+
+    [Fact]
+    public void ExportProfile_MissingProfile_ReportsProfileMissingReason()
+    {
+        var localizer = new Localizer(UiLanguage.ChineseSimplified);
+        string destination = Path.Combine(_testDirectory, "out.json");
+
+        var exception = Assert.Throws<OperationFailureException>(
+            () => _profileService.ExportProfile("DoesNotExist", destination));
+
+        Assert.Equal(OperationFailureReason.ProfileMissing, exception.Reason);
+        Assert.Equal("配置不存在。", OperationDisplay.ErrorDetail(localizer, exception));
+    }
+
+    [Fact]
+    public void ImportProfile_MissingSourceFile_ReportsSourceFileMissingReason()
+    {
+        var localizer = new Localizer(UiLanguage.ChineseSimplified);
+        string missing = Path.Combine(_testDirectory, "no-such-file.json");
+
+        var exception = Assert.Throws<OperationFailureException>(
+            () => _profileService.ImportProfile(missing));
+
+        Assert.Equal(OperationFailureReason.SourceFileMissing, exception.Reason);
+        Assert.Equal("Source file not found.", exception.Message);
+        Assert.Equal("源文件不存在。", OperationDisplay.ErrorDetail(localizer, exception));
+    }
+
+    [Theory]
+    [InlineData("{ this is not json")]
+    [InlineData("null")]
+    public void ImportProfile_InvalidFormat_ReportsInvalidProfileFormatReason(string content)
+    {
+        var localizer = new Localizer(UiLanguage.ChineseSimplified);
+        string source = Path.Combine(_testDirectory, "broken.json");
+        File.WriteAllText(source, content);
+
+        var exception = Assert.Throws<OperationFailureException>(
+            () => _profileService.ImportProfile(source));
+
+        Assert.Equal(OperationFailureReason.InvalidProfileFormat, exception.Reason);
+        Assert.Equal("无效配置格式。", OperationDisplay.ErrorDetail(localizer, exception));
+    }
+
+    [Fact]
+    public void ImportProfile_MalformedJson_KeepsOriginalJsonDiagnosticsAsInnerException()
+    {
+        string source = Path.Combine(_testDirectory, "broken.json");
+        File.WriteAllText(source, "{ \"Name\": ");
+
+        var exception = Assert.Throws<OperationFailureException>(
+            () => _profileService.ImportProfile(source));
+
+        Assert.Equal(OperationFailureReason.InvalidProfileFormat, exception.Reason);
+        Assert.IsType<JsonException>(exception.InnerException);
+    }
+
+    [Fact]
+    public void ExportProfile_DestinationPathWithSpecialCharacters_IsUsedVerbatim()
+    {
+        var profile = new WorkspaceProfile("工作区 {0} 🎮");
+        _profileService.SaveProfile(profile);
+
+        string directory = Path.Combine(_testDirectory, "备份 {x} 🎮");
+        string destination = Path.Combine(directory, "导出 ‘{1}’ 📦.json");
+        _profileService.ExportProfile("工作区 {0} 🎮", destination);
+
+        Assert.True(File.Exists(destination));
     }
 }

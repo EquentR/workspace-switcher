@@ -45,7 +45,9 @@ public partial class MainWindow : Window
                 if (profile != null)
                 {
                     _viewModel.SwitchToWorkspace(profile, source: "Tray");
-                    _trayIconService?.ShowNotification("Workspace Switched", $"Switched to '{profile.Name}'.");
+                    _trayIconService?.ShowNotification(
+                        Localizer.Current.Get("Tray.SwitchNotificationTitle"),
+                        Localizer.Current.Format("Tray.SwitchNotificationMessage", profile.Name));
                 }
             }
         );
@@ -156,8 +158,8 @@ public partial class MainWindow : Window
             e.Cancel = true;
             Hide();
             _trayIconService.ShowNotification(
-                "Workspace Switcher Active",
-                "App is running in the background. Use global hotkeys (Ctrl+Alt+1..5) or the tray icon.",
+                Localizer.Current.Get("Tray.CloseToTrayTitle"),
+                Localizer.Current.Get("Tray.CloseToTrayMessage"),
                 System.Windows.Forms.ToolTipIcon.Info
             );
         }

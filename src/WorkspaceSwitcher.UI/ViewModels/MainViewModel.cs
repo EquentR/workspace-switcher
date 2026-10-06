@@ -23,7 +23,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     private ProfileItemViewModel? _selectedProfile;
     private WorkspaceProfile? _activeProfile;
-    private string _statusMessage = "Workspace Switcher is running in the background";
+    private string _statusMessage = string.Empty;
     private bool _autoLaunchMissingApps;
     private bool _minimizeToTrayOnClose;
     private bool _closeAppsOnSwitch;
@@ -217,6 +217,7 @@ public class MainViewModel : INotifyPropertyChanged
         _selectedLanguage = LanguagePreference.Normalize(settings.Language);
 
         var localizer = Localizer.Current;
+        _statusMessage = localizer.Get("MainWindow.BackgroundTitle");
         LanguageSettingLabel = localizer.Get("LanguageSetting.Label");
         LanguageRestartHint = localizer.Get("LanguageSetting.RestartHint");
         LanguageOptions = new[]
@@ -315,7 +316,7 @@ public class MainViewModel : INotifyPropertyChanged
             }
             catch (Exception ex)
             {
-                StatusMessage = Localizer.Current.Format("Status.CaptureFailed", ex.Message);
+                StatusMessage = Localizer.Current.Format("Status.CaptureFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
             }
         }
     }
@@ -372,7 +373,7 @@ public class MainViewModel : INotifyPropertyChanged
             }
             catch (Exception ex)
             {
-                StatusMessage = Localizer.Current.Format("Status.EditFailed", ex.Message);
+                StatusMessage = Localizer.Current.Format("Status.EditFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
             }
         }
     }
@@ -397,23 +398,23 @@ public class MainViewModel : INotifyPropertyChanged
             ActiveProfile = profile;
             SaveCurrentSettings();
 
-            string prefix = string.IsNullOrEmpty(source) ? "" : $"[{source}] ";
-            string taskbarNote = (_switchTaskbarPins && profile.Taskbar != null && profile.Taskbar.Enabled)
-                ? $", taskbar switched to {profile.Taskbar.PinnedItems.Count} pins"
-                : "";
+            int? taskbarPinCount = (_switchTaskbarPins && profile.Taskbar is { Enabled: true } taskbar)
+                ? taskbar.PinnedItems.Count
+                : null;
 
-            if (closedCount > 0)
-            {
-                StatusMessage = $"{prefix}Switched to '{profile.Name}' ({restoredCount} repositioned, {closedCount} closed from '{oldProfile?.Name}'{taskbarNote}).";
-            }
-            else
-            {
-                StatusMessage = $"{prefix}Restored '{profile.Name}' ({restoredCount} windows repositioned{taskbarNote}).";
-            }
+            StatusMessage = OperationDisplay.RestoreResult(
+                Localizer.Current,
+                profile.Name,
+                restoredCount,
+                oldProfile?.Name,
+                closedCount,
+                taskbarPinCount,
+                string.IsNullOrEmpty(source) ? null : source);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error switching workspace: {ex.Message}";
+            StatusMessage = Localizer.Current.Format(
+                "Status.SwitchFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -452,12 +453,14 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(SelectedProfileTaskbarItems));
 
             int taskbarCount = updated.Taskbar?.PinnedItems.Count ?? 0;
-            string taskbarInfo = taskbarCount > 0 ? $", {taskbarCount} taskbar pin(s)" : "";
-            StatusMessage = $"Updated '{target.Name}' with current layout ({updated.Windows.Count} windows{taskbarInfo}).";
+            StatusMessage = taskbarCount > 0
+                ? Localizer.Current.Format("Status.UpdateLayoutSuccessPins", target.Name, updated.Windows.Count, taskbarCount)
+                : Localizer.Current.Format("Status.UpdateLayoutSuccess", target.Name, updated.Windows.Count);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error updating profile: {ex.Message}";
+            StatusMessage = Localizer.Current.Format(
+                "Status.UpdateLayoutFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -483,11 +486,12 @@ public class MainViewModel : INotifyPropertyChanged
             SelectedProfile = Profiles.FirstOrDefault();
             OnPropertyChanged(nameof(TotalProfilesCount));
             RegisterDefaultHotkeys();
-            StatusMessage = $"Workspace '{target.Name}' deleted.";
+            StatusMessage = Localizer.Current.Format("Status.DeleteSuccess", target.Name);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error deleting profile: {ex.Message}";
+            StatusMessage = Localizer.Current.Format(
+                "Status.DeleteFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -500,8 +504,8 @@ public class MainViewModel : INotifyPropertyChanged
         {
             var sfd = new Microsoft.Win32.SaveFileDialog
             {
-                Title = $"Export Workspace Profile '{target.Name}'",
-                Filter = "Workspace Profile (*.json)|*.json|All Files (*.*)|*.*",
+                Title = OperationDisplay.ExportDialogTitle(Localizer.Current, target.Name),
+                Filter = OperationDisplay.ProfileFilter(Localizer.Current),
                 DefaultExt = ".json",
                 FileName = $"{target.Name}.json"
             };
@@ -509,12 +513,14 @@ public class MainViewModel : INotifyPropertyChanged
             if (sfd.ShowDialog() == true)
             {
                 _profileService.ExportProfile(target.Name, sfd.FileName);
-                StatusMessage = $"Exported workspace '{target.Name}' to {System.IO.Path.GetFileName(sfd.FileName)}.";
+                StatusMessage = Localizer.Current.Format(
+                    "Status.ExportSuccess", target.Name, System.IO.Path.GetFileName(sfd.FileName));
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error exporting profile: {ex.Message}";
+            StatusMessage = Localizer.Current.Format(
+                "Status.ExportFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -524,8 +530,8 @@ public class MainViewModel : INotifyPropertyChanged
         {
             var ofd = new Microsoft.Win32.OpenFileDialog
             {
-                Title = "Import Workspace Profile",
-                Filter = "Workspace Profile (*.json)|*.json|All Files (*.*)|*.*",
+                Title = OperationDisplay.ImportDialogTitle(Localizer.Current),
+                Filter = OperationDisplay.ProfileFilter(Localizer.Current),
                 DefaultExt = ".json",
                 Multiselect = false
             };
@@ -535,12 +541,13 @@ public class MainViewModel : INotifyPropertyChanged
                 var imported = _profileService.ImportProfile(ofd.FileName);
                 LoadProfiles();
                 SelectedProfile = Profiles.FirstOrDefault(p => string.Equals(p.Name, imported.Name, StringComparison.OrdinalIgnoreCase));
-                StatusMessage = $"Imported workspace '{imported.Name}' successfully.";
+                StatusMessage = Localizer.Current.Format("Status.ImportSuccess", imported.Name);
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error importing profile: {ex.Message}";
+            StatusMessage = Localizer.Current.Format(
+                "Status.ImportFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -609,7 +616,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            StatusMessage = Localizer.Current.Format("Status.TaskbarCaptureFailed", ex.Message);
+            StatusMessage = Localizer.Current.Format("Status.TaskbarCaptureFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -632,7 +639,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            StatusMessage = Localizer.Current.Format("Status.TaskbarApplyError", ex.Message);
+            StatusMessage = Localizer.Current.Format("Status.TaskbarApplyError", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -657,7 +664,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            StatusMessage = Localizer.Current.Format("Status.TaskbarSyncFailed", ex.Message);
+            StatusMessage = Localizer.Current.Format("Status.TaskbarSyncFailed", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 
@@ -704,7 +711,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            StatusMessage = Localizer.Current.Format("Status.TaskbarScopeError", ex.Message);
+            StatusMessage = Localizer.Current.Format("Status.TaskbarScopeError", OperationDisplay.ErrorDetail(Localizer.Current, ex));
         }
     }
 

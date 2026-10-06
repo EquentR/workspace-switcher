@@ -405,4 +405,155 @@
   <data name="Status.TaskbarScopeError" xml:space="preserve">
     <value>更新固定项失败：{0}</value>
   </data>
+  <!-- 恢复/切换、更新当前布局、删除与导入/导出结果（TASK-06）。仅使用完整模板。
+       恢复/切换系列参数顺序固定：{0} 工作区名称，{1} 恢复窗口数，{2} 关闭原工作区窗口数，
+       {3} 原工作区名称，{4} 任务栏固定项数量，{5} 切换来源显示名。 -->
+  <data name="Status.SwitchFailed" xml:space="preserve">
+    <value>切换工作区失败：{0}</value>
+  </data>
+  <data name="Status.RestoreResult" xml:space="preserve">
+    <value>已恢复工作区‘{0}’（重新定位 {1} 个窗口）。</value>
+  </data>
+  <data name="Status.RestoreResultTaskbar" xml:space="preserve">
+    <value>已恢复工作区‘{0}’（重新定位 {1} 个窗口，任务栏已切换为 {4} 个固定项）。</value>
+  </data>
+  <data name="Status.RestoreResultFromSource" xml:space="preserve">
+    <value>[{5}] 已恢复工作区‘{0}’（重新定位 {1} 个窗口）。</value>
+  </data>
+  <data name="Status.RestoreResultTaskbarFromSource" xml:space="preserve">
+    <value>[{5}] 已恢复工作区‘{0}’（重新定位 {1} 个窗口，任务栏已切换为 {4} 个固定项）。</value>
+  </data>
+  <data name="Status.SwitchResult" xml:space="preserve">
+    <value>已切换到工作区‘{0}’（重新定位 {1} 个窗口，从‘{3}’关闭 {2} 个窗口）。</value>
+  </data>
+  <data name="Status.SwitchResultTaskbar" xml:space="preserve">
+    <value>已切换到工作区‘{0}’（重新定位 {1} 个窗口，从‘{3}’关闭 {2} 个窗口，任务栏已切换为 {4} 个固定项）。</value>
+  </data>
+  <data name="Status.SwitchResultFromSource" xml:space="preserve">
+    <value>[{5}] 已切换到工作区‘{0}’（重新定位 {1} 个窗口，从‘{3}’关闭 {2} 个窗口）。</value>
+  </data>
+  <data name="Status.SwitchResultTaskbarFromSource" xml:space="preserve">
+    <value>[{5}] 已切换到工作区‘{0}’（重新定位 {1} 个窗口，从‘{3}’关闭 {2} 个窗口，任务栏已切换为 {4} 个固定项）。</value>
+  </data>
+  <data name="Status.UpdateLayoutSuccess" xml:space="preserve">
+    <value>已用当前布局更新工作区‘{0}’（{1} 个窗口）。</value>
+    <comment>{0} 工作区名称，{1} 窗口数量。</comment>
+  </data>
+  <data name="Status.UpdateLayoutSuccessPins" xml:space="preserve">
+    <value>已用当前布局更新工作区‘{0}’（{1} 个窗口、{2} 个任务栏固定项）。</value>
+    <comment>{0} 工作区名称，{1} 窗口数量，{2} 固定项数量。</comment>
+  </data>
+  <data name="Status.UpdateLayoutFailed" xml:space="preserve">
+    <value>更新当前布局失败：{0}</value>
+  </data>
+  <data name="Status.DeleteSuccess" xml:space="preserve">
+    <value>已删除工作区‘{0}’。</value>
+  </data>
+  <data name="Status.DeleteFailed" xml:space="preserve">
+    <value>删除工作区失败：{0}</value>
+  </data>
+  <data name="Status.ExportSuccess" xml:space="preserve">
+    <value>已将工作区‘{0}’导出到 {1}。</value>
+    <comment>{0} 工作区名称，{1} 用户文件名（原样保留）。</comment>
+  </data>
+  <data name="Status.ExportFailed" xml:space="preserve">
+    <value>导出工作区失败：{0}</value>
+  </data>
+  <data name="Status.ImportSuccess" xml:space="preserve">
+    <value>已导入工作区‘{0}’。</value>
+  </data>
+  <data name="Status.ImportFailed" xml:space="preserve">
+    <value>导入工作区失败：{0}</value>
+  </data>
+  <!-- 切换来源显示名；内部标识 Hotkey/Tray 不随翻译改变。 -->
+  <data name="SwitchSource.Hotkey" xml:space="preserve">
+    <value>快捷键</value>
+  </data>
+  <data name="SwitchSource.Tray" xml:space="preserve">
+    <value>托盘</value>
+  </data>
+  <!-- 已知业务失败解释，通过稳定原因标识映射。 -->
+  <data name="Error.NameEmpty" xml:space="preserve">
+    <value>名称为空。</value>
+  </data>
+  <data name="Error.ProfileMissing" xml:space="preserve">
+    <value>配置不存在。</value>
+  </data>
+  <data name="Error.SourceFileMissing" xml:space="preserve">
+    <value>源文件不存在。</value>
+  </data>
+  <data name="Error.InvalidProfileFormat" xml:space="preserve">
+    <value>无效配置格式。</value>
+  </data>
+  <data name="Error.HotkeyRegistrationFailed" xml:space="preserve">
+    <value>快捷键注册失败。</value>
+  </data>
+  <!-- 应用异常入口（TASK-06）。{0} 原始消息，{1} 堆栈，均原样保留。 -->
+  <data name="Error.UiTitle" xml:space="preserve">
+    <value>Workspace Switcher - 错误</value>
+  </data>
+  <data name="Error.UiMessage" xml:space="preserve">
+    <value>界面错误：{0}&#10;&#10;{1}</value>
+  </data>
+  <data name="Error.FatalTitle" xml:space="preserve">
+    <value>Workspace Switcher - 严重错误</value>
+  </data>
+  <data name="Error.FatalMessage" xml:space="preserve">
+    <value>严重错误：{0}&#10;&#10;{1}</value>
+  </data>
+  <!-- 文件对话框（TASK-06）。仅本地化说明文字；*.json、*.* 筛选模式、扩展名
+       及用户文件名保持原值。 -->
+  <data name="FileDialog.ImportTitle" xml:space="preserve">
+    <value>导入工作区配置</value>
+  </data>
+  <data name="FileDialog.ExportTitle" xml:space="preserve">
+    <value>导出工作区配置‘{0}’</value>
+  </data>
+  <data name="FileDialog.ProfileFilter" xml:space="preserve">
+    <value>工作区配置（*.json）</value>
+  </data>
+  <data name="FileDialog.AllFilesFilter" xml:space="preserve">
+    <value>所有文件（*.*）</value>
+  </data>
+  <!-- 托盘（TASK-06）。菜单 emoji 与品牌名保留在视图代码中。 -->
+  <data name="Tray.HoverText" xml:space="preserve">
+    <value>工作区 / 窗口布局切换器</value>
+  </data>
+  <data name="Tray.QuickSwitchMenu" xml:space="preserve">
+    <value>快速切换工作区</value>
+  </data>
+  <data name="Tray.NoWorkspacesHint" xml:space="preserve">
+    <value>尚未保存工作区</value>
+  </data>
+  <data name="Tray.SnapshotMenu" xml:space="preserve">
+    <value>保存当前布局快照</value>
+  </data>
+  <data name="Tray.SnapshotDescription" xml:space="preserve">
+    <value>从托盘图标创建的快速快照</value>
+    <comment>仅用于新创建的托盘快照描述；已有描述不改写。</comment>
+  </data>
+  <data name="Tray.OpenMenu" xml:space="preserve">
+    <value>打开主界面</value>
+  </data>
+  <data name="Tray.ExitMenu" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="Tray.SwitchNotificationTitle" xml:space="preserve">
+    <value>工作区已切换</value>
+  </data>
+  <data name="Tray.SwitchNotificationMessage" xml:space="preserve">
+    <value>已切换到‘{0}’</value>
+  </data>
+  <data name="Tray.SnapshotNotificationTitle" xml:space="preserve">
+    <value>快照已保存</value>
+  </data>
+  <data name="Tray.SnapshotNotificationMessage" xml:space="preserve">
+    <value>已将当前布局保存为‘{0}’（{1} 个窗口）</value>
+  </data>
+  <data name="Tray.CloseToTrayTitle" xml:space="preserve">
+    <value>Workspace Switcher 正在运行</value>
+  </data>
+  <data name="Tray.CloseToTrayMessage" xml:space="preserve">
+    <value>应用正在后台运行，可使用全局快捷键或托盘图标。</value>
+  </data>
 </root>

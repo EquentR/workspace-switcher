@@ -75,7 +75,9 @@ public class HotkeyManager : IDisposable
 
         if (!success)
         {
-            throw new InvalidOperationException($"Failed to register hotkey {modifiers}+{virtualKey}. It may be in use by another application.");
+            throw new OperationFailureException(
+                OperationFailureReason.HotkeyRegistrationFailed,
+                $"Failed to register hotkey {modifiers}+{virtualKey}. It may be in use by another application.");
         }
 
         return id;

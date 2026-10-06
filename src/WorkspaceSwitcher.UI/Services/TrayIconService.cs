@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using WorkspaceSwitcher.Core;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Services;
 
 namespace WorkspaceSwitcher.UI.Services;
@@ -33,7 +34,7 @@ public class TrayIconService : IDisposable
 
         _notifyIcon = new NotifyIcon
         {
-            Text = "Workspace / Window Layout Switcher",
+            Text = Localizer.Current.Get("Tray.HoverText"),
             Visible = true,
             Icon = GenerateAppIcon()
         };
@@ -57,9 +58,12 @@ public class TrayIconService : IDisposable
 
     public void RebuildContextMenu()
     {
+        // Every rebuild reads the process-wide facade, so the menu always uses this
+        // session's effective language even after a language preference save.
+        var localizer = Localizer.Current;
         var menu = new ContextMenuStrip();
 
-        // Title item
+        // Title item (brand name stays literal)
         var titleItem = new ToolStripMenuItem("🪟 Workspace Switcher")
         {
             Enabled = false,
@@ -70,11 +74,11 @@ public class TrayIconService : IDisposable
 
         // Dynamic Profiles Submenu
         var profiles = _profileService.GetProfileNames();
-        var quickSwitchMenu = new ToolStripMenuItem("⚡ Quick Switch Profile");
+        var quickSwitchMenu = new ToolStripMenuItem("⚡ " + localizer.Get("Tray.QuickSwitchMenu"));
 
         if (profiles.Count == 0)
         {
-            quickSwitchMenu.DropDownItems.Add(new ToolStripMenuItem("No profiles saved yet") { Enabled = false });
+            quickSwitchMenu.DropDownItems.Add(new ToolStripMenuItem(localizer.Get("Tray.NoWorkspacesHint")) { Enabled = false });
         }
         else
         {
@@ -89,11 +93,15 @@ public class TrayIconService : IDisposable
                     }
                     else
                     {
+                        // Fallback restore path: same localized switch notification
+                        // as the wired tray switch.
                         var profile = _profileService.LoadProfile(name);
                         if (profile != null)
                         {
-                            int restored = _windowManager.RestoreWorkspace(profile, launchIfNotRunning: false);
-                            ShowNotification("Profile Applied", $"Restored layout '{name}' ({restored} windows).");
+                            _windowManager.RestoreWorkspace(profile, launchIfNotRunning: false);
+                            ShowNotification(
+                                Localizer.Current.Get("Tray.SwitchNotificationTitle"),
+                                Localizer.Current.Format("Tray.SwitchNotificationMessage", profile.Name));
                         }
                     }
                 };
@@ -102,25 +110,28 @@ public class TrayIconService : IDisposable
         }
         menu.Items.Add(quickSwitchMenu);
 
-        // Snapshot Action
-        var snapshotItem = new ToolStripMenuItem("📸 Quick Snapshot Current", null, (s, e) =>
+        // Snapshot Action. The Quick_ name prefix is a stable snapshot identifier and
+        // stays verbatim; only the description of NEW snapshots is localized.
+        var snapshotItem = new ToolStripMenuItem("📸 " + localizer.Get("Tray.SnapshotMenu"), null, (s, e) =>
         {
             string profileName = $"Quick_{DateTime.Now:HHmmss}";
-            var profile = _windowManager.CaptureWorkspace(profileName, "Quick snapshot from tray icon");
+            var profile = _windowManager.CaptureWorkspace(profileName, Localizer.Current.Get("Tray.SnapshotDescription"));
             _profileService.SaveProfile(profile);
             RebuildContextMenu();
-            ShowNotification("Snapshot Saved", $"Saved current layout as '{profileName}' ({profile.Windows.Count} windows).");
+            ShowNotification(
+                Localizer.Current.Get("Tray.SnapshotNotificationTitle"),
+                Localizer.Current.Format("Tray.SnapshotNotificationMessage", profileName, profile.Windows.Count));
         });
         menu.Items.Add(snapshotItem);
 
         menu.Items.Add(new ToolStripSeparator());
 
         // Open Dashboard
-        var openItem = new ToolStripMenuItem("⚙️ Open Dashboard", null, (s, e) => _showMainWindowAction());
+        var openItem = new ToolStripMenuItem("⚙️ " + localizer.Get("Tray.OpenMenu"), null, (s, e) => _showMainWindowAction());
         menu.Items.Add(openItem);
 
         // Exit
-        var exitItem = new ToolStripMenuItem("❌ Exit", null, (s, e) => _exitAppAction());
+        var exitItem = new ToolStripMenuItem("❌ " + localizer.Get("Tray.ExitMenu"), null, (s, e) => _exitAppAction());
         menu.Items.Add(exitItem);
 
         _notifyIcon.ContextMenuStrip = menu;

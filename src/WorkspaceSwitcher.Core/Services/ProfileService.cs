@@ -13,6 +13,10 @@ public class ProfileService : IProfileService
     private readonly string _profilesDirectory;
     private readonly JsonSerializerOptions _jsonOptions;
 
+    // Byte-identical to the former ArgumentException message — "(Parameter 'profile')"
+    // suffix included — because callers (CLI) print ex.Message verbatim.
+    private const string EmptyNameMessage = "Profile name cannot be empty. (Parameter 'profile')";
+
     public string ProfilesDirectory => _profilesDirectory;
 
     public ProfileService(string? customDirectory = null)
@@ -41,7 +45,7 @@ public class ProfileService : IProfileService
     {
         ArgumentNullException.ThrowIfNull(profile);
         if (string.IsNullOrWhiteSpace(profile.Name))
-            throw new ArgumentException("Profile name cannot be empty.", nameof(profile));
+            throw new OperationFailureException(OperationFailureReason.NameEmpty, EmptyNameMessage);
 
         profile.LastModifiedAt = DateTime.UtcNow;
         string filePath = GetProfileFilePath(profile.Name);
@@ -65,7 +69,7 @@ public class ProfileService : IProfileService
     {
         ArgumentNullException.ThrowIfNull(profile);
         if (string.IsNullOrWhiteSpace(profile.Name))
-            throw new ArgumentException("Profile name cannot be empty.", nameof(profile));
+            throw new OperationFailureException(OperationFailureReason.NameEmpty, EmptyNameMessage);
 
         profile.LastModifiedAt = DateTime.UtcNow;
         string filePath = GetProfileFilePath(profile.Name);
@@ -235,7 +239,8 @@ public class ProfileService : IProfileService
     {
         string sourcePath = GetProfileFilePath(profileName);
         if (!File.Exists(sourcePath))
-            throw new FileNotFoundException($"Profile '{profileName}' does not exist.", sourcePath);
+            throw new OperationFailureException(
+                OperationFailureReason.ProfileMissing, $"Profile '{profileName}' does not exist.");
 
         string? dir = Path.GetDirectoryName(destinationFilePath);
         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
@@ -249,11 +254,27 @@ public class ProfileService : IProfileService
     public WorkspaceProfile ImportProfile(string sourceFilePath)
     {
         if (!File.Exists(sourceFilePath))
-            throw new FileNotFoundException("Source file not found.", sourceFilePath);
+            throw new OperationFailureException(
+                OperationFailureReason.SourceFileMissing, "Source file not found.");
 
         string json = File.ReadAllText(sourceFilePath);
-        var profile = JsonSerializer.Deserialize<WorkspaceProfile>(json, _jsonOptions)
-            ?? throw new InvalidDataException("Invalid workspace profile format.");
+
+        WorkspaceProfile? profile;
+        try
+        {
+            profile = JsonSerializer.Deserialize<WorkspaceProfile>(json, _jsonOptions);
+        }
+        catch (JsonException ex)
+        {
+            // Malformed JSON is a known "invalid format" failure. The original message
+            // and diagnostics stay available through the inner exception.
+            throw new OperationFailureException(
+                OperationFailureReason.InvalidProfileFormat, ex.Message, ex);
+        }
+
+        if (profile is null)
+            throw new OperationFailureException(
+                OperationFailureReason.InvalidProfileFormat, "Invalid workspace profile format.");
 
         SaveProfile(profile);
         return profile;

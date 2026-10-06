@@ -32,7 +32,13 @@ public partial class App : WpfApp
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        WpfMessageBox.Show($"UI Error: {e.Exception.Message}\n\n{e.Exception.StackTrace}", "Workspace Switcher - Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        // Outer explanation and title are localized; the original message and stack
+        // trace are passed through verbatim as diagnostic detail.
+        WpfMessageBox.Show(
+            Localizer.Current.Format("Error.UiMessage", e.Exception.Message, e.Exception.StackTrace),
+            Localizer.Current.Get("Error.UiTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
         e.Handled = true;
     }
 
@@ -40,7 +46,11 @@ public partial class App : WpfApp
     {
         if (e.ExceptionObject is Exception ex)
         {
-            WpfMessageBox.Show($"Fatal Error: {ex.Message}\n\n{ex.StackTrace}", "Workspace Switcher - Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            WpfMessageBox.Show(
+                Localizer.Current.Format("Error.FatalMessage", ex.Message, ex.StackTrace),
+                Localizer.Current.Get("Error.FatalTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
     }
 }

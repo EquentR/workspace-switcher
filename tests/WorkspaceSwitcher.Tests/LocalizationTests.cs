@@ -163,4 +163,94 @@ public class LocalizationTests
 
         Assert.Equal(expected, result);
     }
+
+    [Theory]
+    [InlineData(UiLanguage.English, false, "Updated '工作区 {0} 🎮' with current layout (5 windows).")]
+    [InlineData(UiLanguage.English, true, "Updated '工作区 {0} 🎮' with current layout (5 windows, 3 taskbar pin(s)).")]
+    [InlineData(UiLanguage.ChineseSimplified, false, "已用当前布局更新工作区‘工作区 {0} 🎮’（5 个窗口）。")]
+    [InlineData(UiLanguage.ChineseSimplified, true, "已用当前布局更新工作区‘工作区 {0} 🎮’（5 个窗口、3 个任务栏固定项）。")]
+    public void Format_UpdateLayoutSuccess_WithAndWithoutTaskbarPins_RendersCompleteMessage(
+        UiLanguage language, bool withPins, string expected)
+    {
+        var localizer = new Localizer(language);
+
+        var result = withPins
+            ? localizer.Format("Status.UpdateLayoutSuccessPins", "工作区 {0} 🎮", 5, 3)
+            : localizer.Format("Status.UpdateLayoutSuccess", "工作区 {0} 🎮", 5);
+
+        Assert.Equal(expected, result);
+        Assert.DoesNotContain("{1}", result);
+        Assert.DoesNotContain("{2}", result);
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Status.DeleteSuccess", "工作区 {0} 🎮", "Workspace '工作区 {0} 🎮' deleted.")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.DeleteSuccess", "工作区 {0} 🎮", "已删除工作区‘工作区 {0} 🎮’。")]
+    [InlineData(UiLanguage.English, "Status.ImportSuccess", "工作区 {0} 🎮", "Imported workspace '工作区 {0} 🎮' successfully.")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.ImportSuccess", "工作区 {0} 🎮", "已导入工作区‘工作区 {0} 🎮’。")]
+    public void Format_DeleteAndImportSuccess_KeepRealWorkspaceName(
+        UiLanguage language, string key, string name, string expected)
+    {
+        Assert.Equal(expected, new Localizer(language).Format(key, name));
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Exported workspace '工作区 {0} 🎮' to 备份 {1}.json.")]
+    [InlineData(UiLanguage.ChineseSimplified, "已将工作区‘工作区 {0} 🎮’导出到 备份 {1}.json。")]
+    public void Format_ExportSuccess_KeepsUserFileNameVerbatim(UiLanguage language, string expected)
+    {
+        var result = new Localizer(language).Format(
+            "Status.ExportSuccess", "工作区 {0} 🎮", "备份 {1}.json");
+
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Status.SwitchFailed", "Error switching workspace: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.SwitchFailed", "切换工作区失败：path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.English, "Status.UpdateLayoutFailed", "Error updating profile: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.UpdateLayoutFailed", "更新当前布局失败：path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.English, "Status.DeleteFailed", "Error deleting profile: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.DeleteFailed", "删除工作区失败：path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.English, "Status.ExportFailed", "Error exporting profile: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.ExportFailed", "导出工作区失败：path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.English, "Status.ImportFailed", "Error importing profile: path {x} \"missing\" 路径不存在")]
+    [InlineData(UiLanguage.ChineseSimplified, "Status.ImportFailed", "导入工作区失败：path {x} \"missing\" 路径不存在")]
+    public void Format_OperationFailure_KeepOriginalErrorDetail(UiLanguage language, string key, string expected)
+    {
+        var result = new Localizer(language).Format(key, "path {x} \"missing\" 路径不存在");
+
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Workspace Switcher is running in the background")]
+    [InlineData(UiLanguage.ChineseSimplified, "Workspace Switcher 正在后台运行")]
+    public void InitialBackgroundStatus_ResolvesToLocalizedText(UiLanguage language, string expected)
+    {
+        Assert.Equal(expected, new Localizer(language).Get("MainWindow.BackgroundTitle"));
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Error.UiTitle", "Workspace Switcher - Error")]
+    [InlineData(UiLanguage.English, "Error.FatalTitle", "Workspace Switcher - Fatal Error")]
+    [InlineData(UiLanguage.ChineseSimplified, "Error.UiTitle", "Workspace Switcher - 错误")]
+    [InlineData(UiLanguage.ChineseSimplified, "Error.FatalTitle", "Workspace Switcher - 严重错误")]
+    public void ExceptionDialogTitle_IsLocalized(UiLanguage language, string key, string expected)
+    {
+        Assert.Equal(expected, new Localizer(language).Get(key));
+    }
+
+    [Theory]
+    [InlineData(UiLanguage.English, "Error.UiMessage", "UI Error: boom {x} 🎮\n\n  at Test()")]
+    [InlineData(UiLanguage.English, "Error.FatalMessage", "Fatal Error: boom {x} 🎮\n\n  at Test()")]
+    [InlineData(UiLanguage.ChineseSimplified, "Error.UiMessage", "界面错误：boom {x} 🎮\n\n  at Test()")]
+    [InlineData(UiLanguage.ChineseSimplified, "Error.FatalMessage", "严重错误：boom {x} 🎮\n\n  at Test()")]
+    public void ExceptionDialogMessage_KeepsOriginalMessageAndStackTraceVerbatim(
+        UiLanguage language, string key, string expected)
+    {
+        var result = new Localizer(language).Format(key, "boom {x} 🎮", "  at Test()");
+
+        Assert.Equal(expected, result);
+    }
 }
