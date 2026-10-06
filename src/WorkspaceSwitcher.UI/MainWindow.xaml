@@ -855,6 +855,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <!-- Left Option -->
@@ -937,6 +938,26 @@
                                     </StackPanel>
                                     <TextBlock Text="Toggle '📌 Static' on any pinned app to keep it across all workspaces." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
+                            </Grid>
+
+                            <!-- Language Setting -->
+                            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <TextBlock Text="{Binding LanguageSettingLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding LanguageRestartHint}" FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Style="{StaticResource DarkGlassComboBox}"
+                                          MinWidth="170"
+                                          VerticalAlignment="Center"
+                                          ItemsSource="{Binding LanguageOptions}"
+                                          DisplayMemberPath="Display"
+                                          SelectedValuePath="Value"
+                                          SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}"/>
                             </Grid>
                         </Grid>
                     </StackPanel>

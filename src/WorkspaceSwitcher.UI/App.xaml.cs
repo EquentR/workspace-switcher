@@ -1,6 +1,9 @@
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
+using WorkspaceSwitcher.Core.Localization;
+using WorkspaceSwitcher.Core.Services;
 
 namespace WorkspaceSwitcher.UI;
 
@@ -15,6 +18,16 @@ public partial class App : WpfApp
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+        // Fix the effective UI language before the first window, dialog or tray
+        // object is created. MainWindow is constructed manually for this reason
+        // (no StartupUri): the choice takes effect on the NEXT launch only.
+        var settings = new SettingsService().Load();
+        Localizer.Initialize(settings.Language, CultureInfo.CurrentUICulture);
+
+        var window = new MainWindow();
+        MainWindow = window;
+        window.Show();
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

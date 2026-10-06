@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 
 namespace WorkspaceSwitcher.Core.Models;
 
@@ -14,4 +15,12 @@ public class AppSettings
     public bool SwitchTaskbarPins { get; set; } = true;
     public List<string> StaticPinnedApps { get; set; } = new();
     public List<HotKeyBinding> Hotkeys { get; set; } = new();
+
+    /// <summary>
+    /// Language preference: <see cref="LanguagePreference.System"/>,
+    /// <see cref="LanguagePreference.English"/> or
+    /// <see cref="LanguagePreference.ChineseSimplified"/>. Missing or invalid values
+    /// behave as <see cref="LanguagePreference.System"/>.
+    /// </summary>
+    public string Language { get; set; } = LanguagePreference.System;
 }

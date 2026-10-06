@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using WorkspaceSwitcher.Core;
 using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
 using WorkspaceSwitcher.Core.Services;
 using WorkspaceSwitcher.UI.Views;
@@ -27,6 +28,7 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _minimizeToTrayOnClose;
     private bool _closeAppsOnSwitch;
     private bool _switchTaskbarPins;
+    private string _selectedLanguage = LanguagePreference.System;
 
     public ObservableCollection<ProfileItemViewModel> Profiles { get; } = new();
 
@@ -137,6 +139,26 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    public string LanguageSettingLabel { get; }
+    public string LanguageRestartHint { get; }
+    public IReadOnlyList<LanguageOptionViewModel> LanguageOptions { get; }
+
+    /// <summary>
+    /// Persisted language preference. Changing it only saves the preference: the
+    /// current session's text does not change and the app is not restarted.
+    /// </summary>
+    public string SelectedLanguage
+    {
+        get => _selectedLanguage;
+        set
+        {
+            if (_selectedLanguage == value) return;
+            _selectedLanguage = value;
+            OnPropertyChanged();
+            SaveLanguagePreference();
+        }
+    }
+
     public int TotalProfilesCount => Profiles.Count;
 
     public IProfileService ProfileService => _profileService;
@@ -175,6 +197,17 @@ public class MainViewModel : INotifyPropertyChanged
         _minimizeToTrayOnClose = settings.MinimizeToTrayOnClose;
         _closeAppsOnSwitch = settings.CloseAppsOnSwitch;
         _switchTaskbarPins = settings.SwitchTaskbarPins;
+        _selectedLanguage = LanguagePreference.Normalize(settings.Language);
+
+        var localizer = Localizer.Current;
+        LanguageSettingLabel = localizer.Get("LanguageSetting.Label");
+        LanguageRestartHint = localizer.Get("LanguageSetting.RestartHint");
+        LanguageOptions = new[]
+        {
+            new LanguageOptionViewModel(LanguagePreference.System, localizer.Get("LanguageSetting.FollowSystem")),
+            new LanguageOptionViewModel(LanguagePreference.English, localizer.Get("LanguageSetting.English")),
+            new LanguageOptionViewModel(LanguagePreference.ChineseSimplified, localizer.Get("LanguageSetting.ChineseSimplified"))
+        };
 
         if (!string.IsNullOrWhiteSpace(settings.LastActiveProfileName))
         {
@@ -654,6 +687,13 @@ public class MainViewModel : INotifyPropertyChanged
         {
             StatusMessage = $"Error updating static pin: {ex.Message}";
         }
+    }
+
+    private void SaveLanguagePreference()
+    {
+        var settings = _settingsService.Load();
+        settings.Language = LanguagePreference.Normalize(_selectedLanguage);
+        _settingsService.Save(settings);
     }
 
     private void SaveCurrentSettings()
