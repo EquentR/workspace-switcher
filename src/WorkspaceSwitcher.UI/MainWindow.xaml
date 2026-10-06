@@ -38,7 +38,7 @@
                 </Border>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="Workspace Switcher" FontSize="17" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                    <TextBlock Text="Save, restore and switch your Windows layouts." FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"/>
+                    <TextBlock x:Name="TaglineText" Text="Save, restore and switch your Windows layouts." FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"/>
                 </StackPanel>
             </StackPanel>
 
@@ -47,7 +47,7 @@
                 <Border Background="#0D1224" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="16" Padding="14,6" Margin="0,0,10,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Ellipse Width="7" Height="7" Fill="#10B981" Margin="0,0,7,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Running" FontSize="11.5" FontWeight="SemiBold" Foreground="#10B981" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="RunningText" Text="Running" FontSize="11.5" FontWeight="SemiBold" Foreground="#10B981" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Ctrl + Alt + 1–5" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
@@ -83,20 +83,23 @@
                         <!-- Header with count & + New Button -->
                         <Grid Grid.Row="0" Margin="0,0,0,14">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="My Workspaces" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="MyWorkspacesText" Text="My Workspaces" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                 <Border Background="#1E2642" CornerRadius="8" Padding="7,1" Margin="8,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding TotalProfilesCount}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
                                 </Border>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Style="{StaticResource DarkSecondaryButton}" 
-                                        Content="📥 Import" 
+                                <Button x:Name="ImportButton" Style="{StaticResource DarkSecondaryButton}" 
                                         Margin="0,0,6,0"
                                         Padding="10,6" FontSize="11" FontWeight="SemiBold"
-                                        Command="{Binding ImportProfileCommand}"
-                                        ToolTip="Import a workspace profile (.json)"/>
-                                <Button Style="{StaticResource IndigoGradientButton}" 
+                                        Command="{Binding ImportProfileCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="📥" FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="ImportButtonText" Text="Import" FontSize="11" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="NewButton" Style="{StaticResource IndigoGradientButton}" 
                                         Content="+ New" 
                                         Padding="14,6" FontSize="11.5" FontWeight="Bold"
                                         Command="{Binding OpenCreateWorkspaceDialogCommand}"/>
@@ -163,7 +166,7 @@
                                                 <Border Visibility="{Binding IsActive, Converter={StaticResource BoolToVis}}" 
                                                         Background="#052E16" BorderBrush="#10B981" BorderThickness="1" 
                                                         CornerRadius="4" Padding="5,1" Margin="6,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="ACTIVE" FontSize="8.5" FontWeight="Bold" Foreground="#10B981"/>
+                                                    <TextBlock Text="{Binding ActiveBadgeText}" FontSize="8.5" FontWeight="Bold" Foreground="#10B981"/>
                                                 </Border>
                                             </StackPanel>
                                             <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,1,0,2" TextTrimming="CharacterEllipsis"/>
@@ -176,9 +179,9 @@
                                                 <Border Background="#161D36" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="5,1" Margin="0,0,6,0">
                                                     <TextBlock Text="{Binding DisplayHotkey}" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource AccentIndigoBrush}"/>
                                                 </Border>
-                                                <TextBlock Text="{Binding WindowCount, StringFormat='{}{0}w'}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding MonitorCount, StringFormat='{}🖥{0}'}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding TaskbarItemCount, StringFormat='{}📌{0}'}" Visibility="{Binding HasTaskbarConfig, Converter={StaticResource BoolToVis}}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding WindowCountDisplay}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding MonitorCountDisplay}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding TaskbarPinCountDisplay}" Visibility="{Binding HasTaskbarConfig, Converter={StaticResource BoolToVis}}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
                                             </StackPanel>
 
                                             <!-- Mini Action Buttons (Apply, Edit Modal, Delete) -->
@@ -186,25 +189,25 @@
                                                 <Button Style="{StaticResource DarkIconButton}" 
                                                         Content="▶" 
                                                         Padding="6,3" FontSize="10" Margin="0,0,4,0"
-                                                        ToolTip="Apply layout"
+                                                        ToolTip="{Binding ApplyTooltip}"
                                                         Command="{Binding DataContext.ApplyProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
                                                 <Button Style="{StaticResource DarkIconButton}" 
                                                         Content="✏️" 
                                                         Padding="5,3" FontSize="10" Margin="0,0,4,0"
-                                                        ToolTip="Edit workspace"
+                                                        ToolTip="{Binding EditTooltip}"
                                                         Command="{Binding DataContext.OpenEditWorkspaceDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
                                                 <Button Style="{StaticResource DarkIconButton}" 
                                                         Content="📤" 
                                                         Padding="5,3" FontSize="10" Margin="0,0,4,0"
-                                                        ToolTip="Export workspace (.json)"
+                                                        ToolTip="{Binding ExportTooltip}"
                                                         Command="{Binding DataContext.ExportProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
                                                 <Button Style="{StaticResource DarkIconButton}" 
                                                         Content="🗑️" 
                                                         Padding="5,3" FontSize="10"
-                                                        ToolTip="Delete workspace"
+                                                        ToolTip="{Binding DeleteTooltip}"
                                                         Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"/>
                                             </StackPanel>
@@ -225,8 +228,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="🖥" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Workspace Switcher is running in the background" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBlock Text="Use your global hotkeys to quickly switch between workspaces." FontSize="10" Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock x:Name="BackgroundTitleText" Text="Workspace Switcher is running in the background" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock x:Name="BackgroundHintText" Text="Use your global hotkeys to quickly switch between workspaces." FontSize="10" Foreground="{StaticResource TextMutedBrush}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -258,20 +261,26 @@
                                     <TextBlock Text="{Binding SelectedProfile.IconGlyph, FallbackValue='💻'}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding SelectedProfile.Name, FallbackValue='Select a Workspace'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="{Binding SelectedProfile.Description, FallbackValue='Choose a workspace from the left panel'}" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Text="{Binding SelectedProfileNameDisplay}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding SelectedProfileDescriptionDisplay}" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
                                 </StackPanel>
                             </StackPanel>
 
                             <!-- Metadata tags row -->
-                            <StackPanel Orientation="Horizontal" Margin="56,0,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="56,0,0,0" Visibility="{Binding HasSelectedProfile, Converter={StaticResource BoolToVis}}">
                                 <Border Background="#161D36" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6,1" Margin="0,0,8,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding SelectedProfile.DisplayHotkey}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource AccentIndigoBrush}"/>
                                 </Border>
-                                <TextBlock Text="{Binding SelectedProfile.WindowCount, StringFormat='{}🗔 {0} Windows  •  '}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding SelectedProfile.MonitorCount, StringFormat='{}🖥 {0} Monitors  •  '}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding SelectedProfile.TaskbarItemCount, StringFormat='{}📌 {0} Taskbar Pins  •  '}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding SelectedProfile.RelativeTime, StringFormat='{}Captured: {0}'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
+                                    <Run Text="🗔 "/><Run Text="{Binding SelectedProfile.WindowsStatDisplay}"/><Run Text="  •  "/>
+                                </TextBlock>
+                                <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
+                                    <Run Text="🖥 "/><Run Text="{Binding SelectedProfile.MonitorsStatDisplay}"/><Run Text="  •  "/>
+                                </TextBlock>
+                                <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center">
+                                    <Run Text="📌 "/><Run Text="{Binding SelectedProfile.TaskbarPinsStatDisplay}"/><Run Text="  •  "/>
+                                </TextBlock>
+                                <TextBlock Text="{Binding SelectedProfile.CapturedDisplay}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -284,12 +293,12 @@
                                     IsEnabled="{Binding HasSelectedProfile}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="▶" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Restore Workspace" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="RestoreButtonText" Text="Restore Workspace" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Style="{StaticResource DarkSecondaryButton}" 
+                                <Button x:Name="DetailExportButton" Style="{StaticResource DarkSecondaryButton}" 
                                         Padding="12,6" Margin="0,0,6,0"
                                         Command="{Binding ExportProfileCommand}"
                                         CommandParameter="{Binding SelectedProfile}"
@@ -297,7 +306,7 @@
                                         ToolTip="Export workspace profile to JSON file">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="📤" FontSize="11" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Export" FontSize="11.5" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="ExportButtonText" Text="Export" FontSize="11.5" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
 
@@ -308,7 +317,7 @@
                                         IsEnabled="{Binding HasSelectedProfile}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="🔄" FontSize="11" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Update Workspace" FontSize="11.5" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="UpdateButtonText" Text="Update Workspace" FontSize="11.5" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
 
@@ -847,7 +856,7 @@
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                             <TextBlock Text="⚙" FontSize="13" Foreground="{StaticResource AccentIndigoBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Restore Settings" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="RestoreSettingsTitleText" Text="Restore Settings" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <Grid>
@@ -873,8 +882,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock Text="Auto-launch closed apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Automatically start applications that were closed." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="AutoLaunchLabelText" Text="Auto-launch closed apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="AutoLaunchDescriptionText" Text="Automatically start applications that were closed." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding AutoLaunchMissingApps}"/>
                             </Grid>
@@ -886,8 +895,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock Text="Close old workspace apps on switch" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Close apps from the old workspace not in the new layout." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="CloseOldLabelText" Text="Close old workspace apps on switch" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="CloseOldDescriptionText" Text="Close apps from the old workspace not in the new layout." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding CloseAppsOnSwitch}"/>
                             </Grid>
@@ -899,8 +908,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock Text="Minimize to System Tray on close [X]" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Keep Workspace Switcher running in the background." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="MinimizeTrayLabelText" Text="Minimize to System Tray on close [X]" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="MinimizeTrayDescriptionText" Text="Keep Workspace Switcher running in the background." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding MinimizeToTrayOnClose}"/>
                             </Grid>
@@ -909,10 +918,10 @@
                             <Grid Grid.Row="1" Grid.Column="2" Margin="0,12,0,0">
                                 <StackPanel VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Active workspace: " FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                        <TextBlock Text="{Binding ActiveProfileName, FallbackValue='None'}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentIndigoBrush}"/>
+                                        <TextBlock x:Name="ActiveWorkspaceLabelText" Text="Active workspace: " FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <TextBlock Text="{Binding ActiveProfileNameDisplay}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentIndigoBrush}"/>
                                     </StackPanel>
-                                    <TextBlock Text="Layouts smoothly transition across all connected displays." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="TransitionDescriptionText" Text="Layouts smoothly transition across all connected displays." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
 
@@ -923,8 +932,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                    <TextBlock Text="Switch Taskbar pinned apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Swap taskbar shortcuts between workspaces (e.g. Gaming vs Work)." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="SwitchTaskbarLabelText" Text="Switch Taskbar pinned apps on restore" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock x:Name="SwitchTaskbarDescriptionText" Text="Swap taskbar shortcuts between workspaces (e.g. Gaming vs Work)." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource ModernToggleSwitch}" IsChecked="{Binding SwitchTaskbarPins}"/>
                             </Grid>
@@ -933,10 +942,11 @@
                             <Grid Grid.Row="2" Grid.Column="2" Margin="0,12,0,0">
                                 <StackPanel VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="📌 Static pins: " FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                        <TextBlock Text="Preserved across all layouts" FontSize="11" FontWeight="SemiBold" Foreground="#C084FC"/>
+                                        <TextBlock Text="📌" FontSize="11" Margin="0,0,4,0" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="StaticPinsLabelText" Text="Static pins: " FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="StaticPinsValueText" Text="Preserved across all layouts" FontSize="11" FontWeight="SemiBold" Foreground="#C084FC"/>
                                     </StackPanel>
-                                    <TextBlock Text="Toggle '📌 Static' on any pinned app to keep it across all workspaces." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="StaticPinsDescriptionText" Text="Toggle '📌 Static' on any pinned app to keep it across all workspaces." FontSize="10.5" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
 

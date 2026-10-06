@@ -70,7 +70,9 @@ public class ProfileItemViewModel : INotifyPropertyChanged
     }
 
     public string Name => _profile.Name;
-    public string Description => string.IsNullOrWhiteSpace(_profile.Description) ? "workspace" : _profile.Description;
+    public string Description => string.IsNullOrWhiteSpace(_profile.Description)
+        ? Localizer.Current.Get("Workspace.DescriptionFallback")
+        : _profile.Description;
     
     public string IconGlyph
     {
@@ -150,28 +152,30 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         }
     }
 
-    public string RelativeTime
-    {
-        get
-        {
-            var local = _profile.LastModifiedAt.ToLocalTime();
-            var diff = DateTime.Now - local;
+    /// <summary>
+    /// Capture timestamp rendered for the current language. The day-boundary
+    /// judgment runs in local time against the wall clock here; the formatting
+    /// itself is deterministic per explicit reference time (Localizer.FormatRelativeTime).
+    /// </summary>
+    public string RelativeTime =>
+        Localizer.Current.FormatRelativeTime(_profile.LastModifiedAt.ToLocalTime(), DateTime.Now);
 
-            if (diff.TotalDays < 1 && local.Date == DateTime.Today)
-            {
-                return $"Today, {local:HH:mm}";
-            }
-            if (local.Date == DateTime.Today.AddDays(-1))
-            {
-                return $"Yesterday, {local:HH:mm}";
-            }
-            if (diff.TotalDays < 7)
-            {
-                return $"{(int)diff.TotalDays} days ago, {local:HH:mm}";
-            }
-            return local.ToString("dd. MMM, HH:mm");
-        }
-    }
+    // Display strings consumed by MainWindow.xaml (TASK-03). All text and count
+    // formatting comes from the localization facade; the view holds no format fragments.
+    public string ActiveBadgeText => Localizer.Current.Get("ListRow.ActiveBadge");
+    public string ApplyTooltip => Localizer.Current.Get("ListRow.ApplyTooltip");
+    public string EditTooltip => Localizer.Current.Get("ListRow.EditTooltip");
+    public string ExportTooltip => Localizer.Current.Get("ListRow.ExportTooltip");
+    public string DeleteTooltip => Localizer.Current.Get("ListRow.DeleteTooltip");
+
+    public string WindowCountDisplay => Localizer.Current.Format("ListRow.WindowCount", WindowCount);
+    public string MonitorCountDisplay => Localizer.Current.Format("ListRow.MonitorCount", MonitorCount);
+    public string TaskbarPinCountDisplay => Localizer.Current.Format("ListRow.PinCount", TaskbarItemCount);
+
+    public string WindowsStatDisplay => Localizer.Current.Format("Detail.WindowsStat", WindowCount);
+    public string MonitorsStatDisplay => Localizer.Current.Format("Detail.MonitorsStat", MonitorCount);
+    public string TaskbarPinsStatDisplay => Localizer.Current.Format("Detail.PinsStat", TaskbarItemCount);
+    public string CapturedDisplay => Localizer.Current.Format("Detail.Captured", RelativeTime);
 
     public System.Windows.Media.Brush IconBrush
     {
@@ -219,6 +223,7 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(HasTaskbarConfig));
         OnPropertyChanged(nameof(TaskbarItemCount));
         OnPropertyChanged(nameof(IsTaskbarEnabled));
+        NotifyDisplayStats();
     }
 
     private void OnTaskbarItemToggled(TaskbarItemViewModel item)
@@ -233,6 +238,7 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         _profile.Taskbar?.PinnedItems.Remove(item.Model);
         OnPropertyChanged(nameof(HasTaskbarConfig));
         OnPropertyChanged(nameof(TaskbarItemCount));
+        NotifyDisplayStats();
         _onProfileUpdated?.Invoke(this);
     }
 
@@ -256,6 +262,7 @@ public class ProfileItemViewModel : INotifyPropertyChanged
     {
         OnPropertyChanged(nameof(WindowCount));
         OnPropertyChanged(nameof(MonitorCount));
+        NotifyDisplayStats();
         _onProfileUpdated?.Invoke(this);
     }
 
@@ -265,6 +272,7 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         _profile.Windows?.Remove(item.Model);
         OnPropertyChanged(nameof(WindowCount));
         OnPropertyChanged(nameof(MonitorCount));
+        NotifyDisplayStats();
         _onProfileUpdated?.Invoke(this);
     }
 
@@ -276,12 +284,28 @@ public class ProfileItemViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(WindowCount));
         OnPropertyChanged(nameof(MonitorCount));
         OnPropertyChanged(nameof(RelativeTime));
+        OnPropertyChanged(nameof(CapturedDisplay));
         OnPropertyChanged(nameof(WindowItems));
         OnPropertyChanged(nameof(TaskbarItems));
         OnPropertyChanged(nameof(HasTaskbarConfig));
         OnPropertyChanged(nameof(TaskbarItemCount));
         OnPropertyChanged(nameof(IsTaskbarEnabled));
         OnPropertyChanged(nameof(IsActive));
+        NotifyDisplayStats();
+    }
+
+    /// <summary>
+    /// Raises change notifications for every preformatted count display so list rows
+    /// and detail stats stay in sync with the underlying counts.
+    /// </summary>
+    private void NotifyDisplayStats()
+    {
+        OnPropertyChanged(nameof(WindowCountDisplay));
+        OnPropertyChanged(nameof(MonitorCountDisplay));
+        OnPropertyChanged(nameof(TaskbarPinCountDisplay));
+        OnPropertyChanged(nameof(WindowsStatDisplay));
+        OnPropertyChanged(nameof(MonitorsStatDisplay));
+        OnPropertyChanged(nameof(TaskbarPinsStatDisplay));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

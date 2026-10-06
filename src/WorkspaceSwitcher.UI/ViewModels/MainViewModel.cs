@@ -42,6 +42,8 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(HasSelectedProfile));
             OnPropertyChanged(nameof(SelectedProfileWindowItems));
             OnPropertyChanged(nameof(SelectedProfileTaskbarItems));
+            OnPropertyChanged(nameof(SelectedProfileNameDisplay));
+            OnPropertyChanged(nameof(SelectedProfileDescriptionDisplay));
         }
     }
 
@@ -54,12 +56,27 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _activeProfile = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ActiveProfileName));
+            OnPropertyChanged(nameof(ActiveProfileNameDisplay));
             UpdateActiveProfilesInList();
         }
     }
 
-    public string? ActiveProfileName => _activeProfile?.Name;
+    /// <summary>
+    /// Hero header texts for the selected workspace. When nothing is selected the
+    /// localized fallback texts are shown instead of a broken binding fallback.
+    /// </summary>
+    public string SelectedProfileNameDisplay =>
+        SelectedProfile?.Name ?? Localizer.Current.Get("Detail.NoSelectionTitle");
+
+    public string SelectedProfileDescriptionDisplay =>
+        SelectedProfile?.Description ?? Localizer.Current.Get("Detail.NoSelectionSubtitle");
+
+    /// <summary>
+    /// Active workspace name for the Restore Settings card, or the localized
+    /// "none" fallback when no workspace is active.
+    /// </summary>
+    public string ActiveProfileNameDisplay =>
+        _activeProfile?.Name ?? Localizer.Current.Get("RestoreSettings.ActiveNone");
 
     public bool HasSelectedProfile => SelectedProfile != null;
 

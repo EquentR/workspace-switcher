@@ -156,4 +156,32 @@ public class SettingsServiceTests : IDisposable
         Assert.Equal(KeyModifiers.Control | KeyModifiers.Alt, hotkey.Modifiers);
         Assert.Equal(49u, hotkey.VirtualKey);
     }
+
+    [Fact]
+    public void Save_LanguagePreferenceOnly_KeepsRestoreOptions()
+    {
+        // TASK-03: changing the language from the settings card must leave every
+        // restore option untouched, and vice versa (the reverse direction is
+        // Save_WhenOtherOptionsChange_PreservesLanguageAndExistingFields).
+        _settingsService.Save(new AppSettings
+        {
+            Language = "en",
+            AutoLaunchMissingApps = true,
+            MinimizeToTrayOnClose = false,
+            CloseAppsOnSwitch = true,
+            SwitchTaskbarPins = false
+        });
+
+        // Same load-modify-save shape as MainViewModel.SaveLanguagePreference.
+        var settings = _settingsService.Load();
+        settings.Language = "zh-CN";
+        _settingsService.Save(settings);
+
+        var loaded = _settingsService.Load();
+        Assert.Equal("zh-CN", loaded.Language);
+        Assert.True(loaded.AutoLaunchMissingApps);
+        Assert.False(loaded.MinimizeToTrayOnClose);
+        Assert.True(loaded.CloseAppsOnSwitch);
+        Assert.False(loaded.SwitchTaskbarPins);
+    }
 }

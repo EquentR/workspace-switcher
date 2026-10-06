@@ -104,6 +104,33 @@ public sealed class Localizer
     /// </summary>
     public string Format(string key, params object?[] args) => string.Format(_culture, Get(key), args);
 
+    /// <summary>
+    /// Formats a capture timestamp for display relative to an explicit reference time.
+    /// Both arguments must already be local times; the day-boundary judgment (today /
+    /// yesterday) compares local calendar days and never reads the wall clock, so the
+    /// rendering is deterministic for a given pair of times.
+    /// </summary>
+    public string FormatRelativeTime(DateTime localTimestamp, DateTime referenceLocalTime)
+    {
+        if (localTimestamp.Date == referenceLocalTime.Date)
+        {
+            return Format("Time.Today", localTimestamp);
+        }
+
+        if (localTimestamp.Date == referenceLocalTime.Date.AddDays(-1))
+        {
+            return Format("Time.Yesterday", localTimestamp);
+        }
+
+        var elapsedDays = (referenceLocalTime - localTimestamp).TotalDays;
+        if (elapsedDays < 7)
+        {
+            return Format("Time.DaysAgo", (int)elapsedDays, localTimestamp);
+        }
+
+        return localTimestamp.ToString(Get("Time.AbsoluteFormat"), _culture);
+    }
+
     private static bool IsSimplifiedChinese(CultureInfo culture)
     {
         for (var current = culture; !string.IsNullOrEmpty(current.Name); current = current.Parent)

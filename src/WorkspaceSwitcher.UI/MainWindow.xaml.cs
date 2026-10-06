@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using WorkspaceSwitcher.Core;
 using WorkspaceSwitcher.Core.Hotkeys;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Services;
 using WorkspaceSwitcher.UI.Services;
 using WorkspaceSwitcher.UI.ViewModels;
@@ -22,6 +23,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ApplyLocalization();
 
         _windowManager = new WindowManager();
         _profileService = new ProfileService();
@@ -46,6 +48,45 @@ public partial class MainWindow : Window
                 }
             }
         );
+    }
+
+    /// <summary>
+    /// Replaces the design-time English texts of the main window overview, workspace
+    /// list chrome and Restore Settings card with the effective language's strings.
+    /// Dynamic texts (counts, capture time, fallbacks) come from the view models.
+    /// </summary>
+    private void ApplyLocalization()
+    {
+        var localizer = Localizer.Current;
+
+        TaglineText.Text = localizer.Get("MainWindow.Tagline");
+        RunningText.Text = localizer.Get("MainWindow.Running");
+        MyWorkspacesText.Text = localizer.Get("MainWindow.MyWorkspaces");
+        ImportButtonText.Text = localizer.Get("MainWindow.Import");
+        ImportButton.ToolTip = localizer.Get("MainWindow.ImportTooltip");
+        NewButton.Content = localizer.Get("MainWindow.New");
+        BackgroundTitleText.Text = localizer.Get("MainWindow.BackgroundTitle");
+        BackgroundHintText.Text = localizer.Get("MainWindow.BackgroundHint");
+
+        RestoreButtonText.Text = localizer.Get("Detail.RestoreButton");
+        ExportButtonText.Text = localizer.Get("Detail.ExportButton");
+        DetailExportButton.ToolTip = localizer.Get("Detail.ExportTooltip");
+        UpdateButtonText.Text = localizer.Get("Detail.UpdateButton");
+
+        RestoreSettingsTitleText.Text = localizer.Get("RestoreSettings.Title");
+        AutoLaunchLabelText.Text = localizer.Get("RestoreSettings.AutoLaunchLabel");
+        AutoLaunchDescriptionText.Text = localizer.Get("RestoreSettings.AutoLaunchDescription");
+        CloseOldLabelText.Text = localizer.Get("RestoreSettings.CloseOldLabel");
+        CloseOldDescriptionText.Text = localizer.Get("RestoreSettings.CloseOldDescription");
+        MinimizeTrayLabelText.Text = localizer.Get("RestoreSettings.MinimizeTrayLabel");
+        MinimizeTrayDescriptionText.Text = localizer.Get("RestoreSettings.MinimizeTrayDescription");
+        ActiveWorkspaceLabelText.Text = localizer.Get("RestoreSettings.ActiveWorkspaceLabel");
+        TransitionDescriptionText.Text = localizer.Get("RestoreSettings.TransitionDescription");
+        SwitchTaskbarLabelText.Text = localizer.Get("RestoreSettings.SwitchTaskbarLabel");
+        SwitchTaskbarDescriptionText.Text = localizer.Get("RestoreSettings.SwitchTaskbarDescription");
+        StaticPinsLabelText.Text = localizer.Get("RestoreSettings.StaticPinsLabel");
+        StaticPinsValueText.Text = localizer.Get("RestoreSettings.StaticPinsValue");
+        StaticPinsDescriptionText.Text = localizer.Get("RestoreSettings.StaticPinsDescription");
     }
 
     public void ShowWindow()

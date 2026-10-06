@@ -100,4 +100,154 @@
   <data name="Status.EditFailed" xml:space="preserve">
     <value>更新工作区失败：{0}</value>
   </data>
+  <!-- 主窗口概览与工作区管理（TASK-03）。图标、emoji 与符号保持字面值。 -->
+  <data name="MainWindow.Tagline" xml:space="preserve">
+    <value>保存、恢复和切换窗口布局。</value>
+  </data>
+  <data name="MainWindow.Running" xml:space="preserve">
+    <value>运行中</value>
+  </data>
+  <data name="MainWindow.MyWorkspaces" xml:space="preserve">
+    <value>我的工作区</value>
+  </data>
+  <data name="MainWindow.Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="MainWindow.ImportTooltip" xml:space="preserve">
+    <value>导入工作区配置（.json）</value>
+  </data>
+  <data name="MainWindow.New" xml:space="preserve">
+    <value>+ 新建</value>
+  </data>
+  <data name="MainWindow.BackgroundTitle" xml:space="preserve">
+    <value>Workspace Switcher 正在后台运行</value>
+  </data>
+  <data name="MainWindow.BackgroundHint" xml:space="preserve">
+    <value>使用全局快捷键快速切换工作区。</value>
+  </data>
+  <data name="ListRow.ActiveBadge" xml:space="preserve">
+    <value>当前使用</value>
+  </data>
+  <data name="ListRow.WindowCount" xml:space="preserve">
+    <value>{0} 个窗口</value>
+    <comment>列表行按可用宽度调整布局。</comment>
+  </data>
+  <data name="ListRow.MonitorCount" xml:space="preserve">
+    <value>🖥{0}</value>
+    <comment>与语言无关的紧凑标记（符号 + 数量），各语言保持一致。</comment>
+  </data>
+  <data name="ListRow.PinCount" xml:space="preserve">
+    <value>📌{0}</value>
+    <comment>与语言无关的紧凑标记（符号 + 数量），各语言保持一致。</comment>
+  </data>
+  <data name="ListRow.ApplyTooltip" xml:space="preserve">
+    <value>应用布局</value>
+  </data>
+  <data name="ListRow.EditTooltip" xml:space="preserve">
+    <value>编辑工作区</value>
+  </data>
+  <data name="ListRow.ExportTooltip" xml:space="preserve">
+    <value>导出工作区（.json）</value>
+  </data>
+  <data name="ListRow.DeleteTooltip" xml:space="preserve">
+    <value>删除工作区</value>
+  </data>
+  <data name="Workspace.DescriptionFallback" xml:space="preserve">
+    <value>工作区</value>
+    <comment>工作区描述为空时的回退显示。</comment>
+  </data>
+  <!-- 工作区详情摘要及其入口按钮（TASK-03）。此处仅替换入口标签；操作结果、
+       对话框和错误由 TASK-06 覆盖。 -->
+  <data name="Detail.NoSelectionTitle" xml:space="preserve">
+    <value>选择工作区</value>
+  </data>
+  <data name="Detail.NoSelectionSubtitle" xml:space="preserve">
+    <value>请从左侧选择一个工作区</value>
+  </data>
+  <data name="Detail.WindowsStat" xml:space="preserve">
+    <value>{0} 个窗口</value>
+  </data>
+  <data name="Detail.MonitorsStat" xml:space="preserve">
+    <value>{0} 台显示器</value>
+  </data>
+  <data name="Detail.PinsStat" xml:space="preserve">
+    <value>{0} 个任务栏固定项</value>
+  </data>
+  <data name="Detail.Captured" xml:space="preserve">
+    <value>保存时间：{0}</value>
+  </data>
+  <data name="Detail.RestoreButton" xml:space="preserve">
+    <value>恢复工作区</value>
+  </data>
+  <data name="Detail.ExportButton" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Detail.ExportTooltip" xml:space="preserve">
+    <value>将工作区配置导出为 JSON 文件</value>
+  </data>
+  <data name="Detail.UpdateButton" xml:space="preserve">
+    <value>更新工作区</value>
+  </data>
+  <!-- 恢复设置卡片（TASK-03）。语言选择器由 TASK-01 添加。 -->
+  <data name="RestoreSettings.Title" xml:space="preserve">
+    <value>恢复设置</value>
+  </data>
+  <data name="RestoreSettings.AutoLaunchLabel" xml:space="preserve">
+    <value>恢复时自动启动已关闭的应用</value>
+  </data>
+  <data name="RestoreSettings.AutoLaunchDescription" xml:space="preserve">
+    <value>自动启动布局中已关闭的应用。</value>
+  </data>
+  <data name="RestoreSettings.CloseOldLabel" xml:space="preserve">
+    <value>切换时关闭原工作区应用</value>
+  </data>
+  <data name="RestoreSettings.CloseOldDescription" xml:space="preserve">
+    <value>关闭原工作区中不属于新布局的应用。</value>
+  </data>
+  <data name="RestoreSettings.MinimizeTrayLabel" xml:space="preserve">
+    <value>点击关闭按钮时最小化到系统托盘</value>
+  </data>
+  <data name="RestoreSettings.MinimizeTrayDescription" xml:space="preserve">
+    <value>让 Workspace Switcher 继续在后台运行。</value>
+  </data>
+  <data name="RestoreSettings.ActiveWorkspaceLabel" xml:space="preserve">
+    <value>当前工作区：</value>
+    <comment>工作区名称前的标签；全角冒号后按界面排版留出间隔。</comment>
+  </data>
+  <data name="RestoreSettings.ActiveNone" xml:space="preserve">
+    <value>无</value>
+    <comment>没有当前工作区时的回退显示。</comment>
+  </data>
+  <data name="RestoreSettings.TransitionDescription" xml:space="preserve">
+    <value>在所有已连接的显示器上平滑切换布局。</value>
+  </data>
+  <data name="RestoreSettings.SwitchTaskbarLabel" xml:space="preserve">
+    <value>恢复时切换任务栏固定应用</value>
+  </data>
+  <data name="RestoreSettings.SwitchTaskbarDescription" xml:space="preserve">
+    <value>随工作区切换任务栏快捷方式（例如游戏与工作）。</value>
+  </data>
+  <data name="RestoreSettings.StaticPinsLabel" xml:space="preserve">
+    <value>全局固定项：</value>
+  </data>
+  <data name="RestoreSettings.StaticPinsValue" xml:space="preserve">
+    <value>在所有布局中保留</value>
+  </data>
+  <data name="RestoreSettings.StaticPinsDescription" xml:space="preserve">
+    <value>将固定应用设为“全局固定”，即可在所有工作区保留它。</value>
+  </data>
+  <!-- 保存时间显示（TASK-03）。跨日判定使用本地时间；较早日期的格式模式按语言区分。 -->
+  <data name="Time.Today" xml:space="preserve">
+    <value>今天 {0:HH:mm}</value>
+  </data>
+  <data name="Time.Yesterday" xml:space="preserve">
+    <value>昨天 {0:HH:mm}</value>
+  </data>
+  <data name="Time.DaysAgo" xml:space="preserve">
+    <value>{0} 天前 {1:HH:mm}</value>
+  </data>
+  <data name="Time.AbsoluteFormat" xml:space="preserve">
+    <value>yyyy年M月d日 HH:mm</value>
+    <comment>超过近期窗口的日期时间格式模式（.NET 自定义格式）。</comment>
+  </data>
 </root>
