@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Documents;
 using WorkspaceSwitcher.Core;
 using WorkspaceSwitcher.Core.Hotkeys;
 using WorkspaceSwitcher.Core.Localization;
@@ -52,8 +53,9 @@ public partial class MainWindow : Window
 
     /// <summary>
     /// Replaces the design-time English texts of the main window overview, workspace
-    /// list chrome and Restore Settings card with the effective language's strings.
-    /// Dynamic texts (counts, capture time, fallbacks) come from the view models.
+    /// list chrome, taskbar area and Restore Settings card with the effective
+    /// language's strings. Dynamic texts (counts, capture time, fallbacks, scope
+    /// status) come from the view models.
     /// </summary>
     private void ApplyLocalization()
     {
@@ -75,6 +77,42 @@ public partial class MainWindow : Window
 
         WindowsTabText.Text = localizer.Get("WindowDetail.TabTitle");
         WindowsListTitleText.Text = localizer.Get("WindowDetail.ListTitle");
+
+        TaskbarTabText.Text = localizer.Get("Taskbar.Title");
+        TaskbarTitleText.Text = localizer.Get("Taskbar.Title");
+        TaskbarEnabledText.Text = localizer.Get("Taskbar.EnabledLabel");
+        string snapshotButton = localizer.Get("Taskbar.SnapshotButton");
+        SnapshotTaskbarButtonText.Text = snapshotButton;
+        SnapshotEmptyButtonText.Text = snapshotButton;
+        ApplyTaskbarButtonText.Text = localizer.Get("Taskbar.ApplyButton");
+        SyncStaticPinsButtonText.Text = localizer.Get("Taskbar.SyncButton");
+        SyncStaticPinsButton.ToolTip = localizer.Get("Taskbar.SyncTooltip");
+        TaskbarEmptyTitleText.Text = localizer.Get("Taskbar.EmptyTitle");
+        TaskbarEmptyDescriptionText.Text = localizer.Get("Taskbar.EmptyDescription");
+
+        // Toggle help: complete localized sentences split at the scope terms so the
+        // key terms stay emphasized without fragment-spliced word order.
+        ToggleHelpText.Inlines.Clear();
+        foreach (var segment in TaskbarDisplay.CreateToggleHelpSegments(localizer))
+        {
+            var run = new Run(segment.Text);
+            switch (segment.Kind)
+            {
+                case TaskbarHelpSegmentKind.StaticTerm:
+                    run.FontWeight = FontWeights.Bold;
+                    run.Foreground = (System.Windows.Media.Brush)FindResource("AccentIndigoBrush");
+                    break;
+                case TaskbarHelpSegmentKind.WorkspaceOnlyTerm:
+                    run.FontWeight = FontWeights.Bold;
+                    run.Foreground = new System.Windows.Media.SolidColorBrush(
+                        System.Windows.Media.Color.FromRgb(0x60, 0xA5, 0xFA));
+                    break;
+                default:
+                    run.Foreground = (System.Windows.Media.Brush)FindResource("TextMutedBrush");
+                    break;
+            }
+            ToggleHelpText.Inlines.Add(run);
+        }
 
         RestoreSettingsTitleText.Text = localizer.Get("RestoreSettings.Title");
         AutoLaunchLabelText.Text = localizer.Get("RestoreSettings.AutoLaunchLabel");

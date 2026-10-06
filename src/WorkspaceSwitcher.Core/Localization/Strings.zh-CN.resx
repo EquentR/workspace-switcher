@@ -311,4 +311,98 @@
     <value>显示器 {0}（{1}×{2}，位置 {3}, {4}）</value>
     <comment>非主显示器名称：{0} 索引，{1} 宽度，{2} 高度，{3} 左坐标，{4} 上坐标；负坐标保留负号。</comment>
   </data>
+  <!-- 任务栏配置区域（TASK-05）。重复标题统一复用 Taskbar.Title，两处快照入口统一复用
+       Taskbar.SnapshotButton；徽标 emoji 保持字面值。 -->
+  <data name="Taskbar.Title" xml:space="preserve">
+    <value>任务栏固定应用</value>
+    <comment>页签与区域标题；所有重复标题复用同一术语。</comment>
+  </data>
+  <data name="Taskbar.EnabledLabel" xml:space="preserve">
+    <value>为此工作区启用</value>
+  </data>
+  <data name="Taskbar.SnapshotButton" xml:space="preserve">
+    <value>保存当前任务栏布局</value>
+    <comment>两处入口（列表按钮与空状态按钮）采用一致名称。</comment>
+  </data>
+  <data name="Taskbar.ApplyButton" xml:space="preserve">
+    <value>立即应用任务栏布局</value>
+  </data>
+  <data name="Taskbar.SyncButton" xml:space="preserve">
+    <value>同步全局固定项</value>
+  </data>
+  <data name="Taskbar.SyncTooltip" xml:space="preserve">
+    <value>将全局固定项同步到所有已保存的工作区</value>
+  </data>
+  <data name="Taskbar.ScopeStatic" xml:space="preserve">
+    <value>📌 全局固定（所有工作区）</value>
+    <comment>固定范围标记：全局固定（在所有工作区保留）。</comment>
+  </data>
+  <data name="Taskbar.ScopeWorkspaceOnly" xml:space="preserve">
+    <value>🗔 仅此工作区</value>
+    <comment>固定范围标记：仅此工作区。</comment>
+  </data>
+  <data name="Taskbar.ToggleHelp" xml:space="preserve">
+    <value>将应用设为“全局固定”，即可在所有工作区保留它（例如浏览器、文件资源管理器）。设为“仅此工作区”的应用只会在此工作区启用时出现。</value>
+    <comment>完整句子翻译，不按英文片段拼接；TaskbarDisplay 按术语切分以突出显示，不改变语序。</comment>
+  </data>
+  <data name="Taskbar.HelpTermStatic" xml:space="preserve">
+    <value>全局固定</value>
+    <comment>强调术语，须逐字出现在 Taskbar.ToggleHelp 中。</comment>
+  </data>
+  <data name="Taskbar.HelpTermWorkspaceOnly" xml:space="preserve">
+    <value>仅此工作区</value>
+    <comment>强调术语，须逐字出现在 Taskbar.ToggleHelp 中。</comment>
+  </data>
+  <data name="Taskbar.RemoveTooltip" xml:space="preserve">
+    <value>从此工作区布局移除</value>
+  </data>
+  <data name="Taskbar.ShellShortcutFallback" xml:space="preserve">
+    <value>Windows Shell 快捷方式</value>
+    <comment>无目标路径时的回退显示；真实路径保持原值。</comment>
+  </data>
+  <data name="Taskbar.EmptyTitle" xml:space="preserve">
+    <value>此工作区尚未保存任务栏布局</value>
+  </data>
+  <data name="Taskbar.EmptyDescription" xml:space="preserve">
+    <value>点击“保存当前任务栏布局”，将当前固定的应用（游戏、开发工具等）保存到此工作区。</value>
+    <comment>引用 Taskbar.SnapshotButton 的统一按钮名称。</comment>
+  </data>
+  <!-- 任务栏操作结果（TASK-05）。仅使用完整模板；用户数据与异常消息按参数原样保留。 -->
+  <data name="Status.TaskbarCaptured" xml:space="preserve">
+    <value>已为工作区‘{1}’保存 {0} 个任务栏固定项。</value>
+    <comment>{0} 固定项数量（0、1 或多个），{1} 工作区名称。</comment>
+  </data>
+  <data name="Status.TaskbarCaptureFailed" xml:space="preserve">
+    <value>保存任务栏固定项失败：{0}</value>
+  </data>
+  <data name="Status.TaskbarNoConfig" xml:space="preserve">
+    <value>此工作区尚未保存任务栏布局。</value>
+  </data>
+  <data name="Status.TaskbarApplySuccess" xml:space="preserve">
+    <value>已为工作区‘{0}’应用任务栏布局（{1} 个固定项）。</value>
+    <comment>{0} 工作区名称，{1} 固定项数量。</comment>
+  </data>
+  <data name="Status.TaskbarApplyFailed" xml:space="preserve">
+    <value>为工作区‘{0}’应用任务栏布局失败。</value>
+  </data>
+  <data name="Status.TaskbarApplyError" xml:space="preserve">
+    <value>应用任务栏布局失败：{0}</value>
+  </data>
+  <data name="Status.TaskbarSyncSuccess" xml:space="preserve">
+    <value>已将全局固定项同步到所有已保存的工作区。</value>
+  </data>
+  <data name="Status.TaskbarSyncFailed" xml:space="preserve">
+    <value>同步全局固定项失败：{0}</value>
+  </data>
+  <data name="Status.TaskbarMarkedStatic" xml:space="preserve">
+    <value>已将‘{0}’标记为全局固定（在所有工作区保留）。</value>
+    <comment>固定范围变化结果；{0} 为真实应用名称。</comment>
+  </data>
+  <data name="Status.TaskbarMarkedWorkspaceOnly" xml:space="preserve">
+    <value>已将‘{0}’标记为仅此工作区（工作区‘{1}’）。</value>
+    <comment>固定范围变化结果；{0} 应用名称，{1} 工作区名称。</comment>
+  </data>
+  <data name="Status.TaskbarScopeError" xml:space="preserve">
+    <value>更新固定项失败：{0}</value>
+  </data>
 </root>

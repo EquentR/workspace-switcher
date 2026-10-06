@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
+using WorkspaceSwitcher.Core.Localization;
 using WorkspaceSwitcher.Core.Models;
 using WorkspaceSwitcher.UI.Services;
 
@@ -42,7 +43,17 @@ public class TaskbarItemViewModel : INotifyPropertyChanged
 
     public bool IsWorkspaceOnly => !IsStatic;
 
-    public string StaticStatusText => IsStatic ? "📌 Static (All Workspaces)" : "🗔 Workspace Only";
+    public string StaticStatusText => TaskbarDisplay.ScopeStatusText(Localizer.Current, IsStatic);
+
+    /// <summary>
+    /// Target path shown verbatim for real shortcuts; pins without a path fall back to
+    /// the localized "Windows Shell Shortcut" text instead of a broken binding fallback.
+    /// </summary>
+    public string TargetPathDisplay => string.IsNullOrWhiteSpace(_model.TargetPath)
+        ? Localizer.Current.Get("Taskbar.ShellShortcutFallback")
+        : _model.TargetPath;
+
+    public string RemoveTooltip => Localizer.Current.Get("Taskbar.RemoveTooltip");
 
     public ImageSource? Icon
     {

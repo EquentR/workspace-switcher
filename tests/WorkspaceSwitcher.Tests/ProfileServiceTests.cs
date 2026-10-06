@@ -320,4 +320,73 @@ public class ProfileServiceTests : IDisposable
         Assert.Equal(1912, loadedWindow.Placement.NormalPosition.Width);
         Assert.Equal(1040, loadedWindow.Placement.NormalPosition.Height);
     }
+
+    [Theory]
+    [InlineData(UiLanguage.English)]
+    [InlineData(UiLanguage.ChineseSimplified)]
+    public void Profile_AfterRenderingTaskbarTextAndTogglingPinScope_KeepsIsStaticAndVerbatimItemData(UiLanguage language)
+    {
+        var localizer = new Localizer(language);
+        var toggled = new TaskbarPinnedItem
+        {
+            DisplayName = "记事本 {x}🚀",
+            ShortcutFileName = "Notepad {x}.lnk",
+            TargetPath = @"C:\Windows\System32\notepad.exe",
+            Arguments = "--start \"游戏 {0}🎮\"",
+            Base64Data = "AAECAw==",
+            IsStatic = true
+        };
+        var untouched = new TaskbarPinnedItem
+        {
+            DisplayName = "游戏",
+            ShortcutFileName = "Game Studio.lnk",
+            TargetPath = @"D:\Games\{0}\bin\app.exe",
+            IsStatic = true
+        };
+        var profile = new WorkspaceProfile("任务栏 {0}🎮")
+        {
+            Taskbar = new TaskbarConfiguration
+            {
+                Enabled = true,
+                PinnedItems = { toggled, untouched }
+            }
+        };
+
+        // The taskbar UI renders its localized display text from the facade in the
+        // effective language; none of that text may influence the saved pin data.
+        _ = TaskbarDisplay.ScopeStatusText(localizer, isStatic: true);
+        _ = TaskbarDisplay.ScopeStatusText(localizer, isStatic: false);
+        _ = TaskbarDisplay.CreateToggleHelpSegments(localizer);
+
+        // Switching the pin scope only flips IsStatic on the toggled item.
+        toggled.IsStatic = false;
+
+        _profileService.SaveProfile(profile);
+
+        string json = File.ReadAllText(Directory.GetFiles(_testDirectory, "*.json").Single());
+        Assert.Contains("\"isStatic\": false", json);
+        Assert.Contains("\"isStatic\": true", json);
+        Assert.Contains("Notepad {x}.lnk", json);
+        Assert.DoesNotContain("全局固定", json);
+        Assert.DoesNotContain("仅此工作区", json);
+        Assert.DoesNotContain("Static (All Workspaces)", json);
+        Assert.DoesNotContain("Workspace Only", json);
+
+        var loaded = _profileService.LoadProfile("任务栏 {0}🎮");
+        Assert.NotNull(loaded);
+        Assert.NotNull(loaded.Taskbar);
+        Assert.Equal(2, loaded.Taskbar.PinnedItems.Count);
+
+        var loadedToggled = loaded.Taskbar.PinnedItems[0];
+        Assert.False(loadedToggled.IsStatic);
+        Assert.Equal("记事本 {x}🚀", loadedToggled.DisplayName);
+        Assert.Equal("Notepad {x}.lnk", loadedToggled.ShortcutFileName);
+        Assert.Equal(@"C:\Windows\System32\notepad.exe", loadedToggled.TargetPath);
+        Assert.Equal("--start \"游戏 {0}🎮\"", loadedToggled.Arguments);
+        Assert.Equal("AAECAw==", loadedToggled.Base64Data);
+
+        var loadedUntouched = loaded.Taskbar.PinnedItems[1];
+        Assert.True(loadedUntouched.IsStatic);
+        Assert.Equal("Game Studio.lnk", loadedUntouched.ShortcutFileName);
+    }
 }

@@ -605,11 +605,11 @@ public class MainViewModel : INotifyPropertyChanged
             target.ReloadTaskbarItems();
             target.NotifyAll();
 
-            StatusMessage = $"Captured {config.PinnedItems.Count} taskbar pin(s) for '{target.Name}'.";
+            StatusMessage = Localizer.Current.Format("Status.TaskbarCaptured", config.PinnedItems.Count, target.Name);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error capturing taskbar pins: {ex.Message}";
+            StatusMessage = Localizer.Current.Format("Status.TaskbarCaptureFailed", ex.Message);
         }
     }
 
@@ -618,7 +618,7 @@ public class MainViewModel : INotifyPropertyChanged
         var target = item ?? SelectedProfile;
         if (target == null || target.Profile.Taskbar == null)
         {
-            StatusMessage = "No taskbar configuration captured for this workspace.";
+            StatusMessage = Localizer.Current.Get("Status.TaskbarNoConfig");
             return;
         }
 
@@ -627,12 +627,12 @@ public class MainViewModel : INotifyPropertyChanged
             var staticPins = _settingsService.Load().StaticPinnedApps;
             bool ok = _taskbarService.ApplyTaskbar(target.Profile.Taskbar, staticPins);
             StatusMessage = ok
-                ? $"Applied taskbar layout for '{target.Name}' ({target.TaskbarItemCount} pinned apps)."
-                : $"Failed to apply taskbar layout for '{target.Name}'.";
+                ? Localizer.Current.Format("Status.TaskbarApplySuccess", target.Name, target.TaskbarItemCount)
+                : Localizer.Current.Format("Status.TaskbarApplyFailed", target.Name);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error applying taskbar: {ex.Message}";
+            StatusMessage = Localizer.Current.Format("Status.TaskbarApplyError", ex.Message);
         }
     }
 
@@ -653,11 +653,11 @@ public class MainViewModel : INotifyPropertyChanged
             }
 
             LoadProfiles();
-            StatusMessage = $"Synchronized static taskbar pins across all workspaces.";
+            StatusMessage = Localizer.Current.Get("Status.TaskbarSyncSuccess");
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error syncing static pins: {ex.Message}";
+            StatusMessage = Localizer.Current.Format("Status.TaskbarSyncFailed", ex.Message);
         }
     }
 
@@ -699,12 +699,12 @@ public class MainViewModel : INotifyPropertyChanged
             }
 
             StatusMessage = item.IsStatic
-                ? $"'{item.DisplayName}' is now marked Static (preserved across all workspaces)."
-                : $"'{item.DisplayName}' is now workspace-only for '{profile.Name}'.";
+                ? Localizer.Current.Format("Status.TaskbarMarkedStatic", item.DisplayName)
+                : Localizer.Current.Format("Status.TaskbarMarkedWorkspaceOnly", item.DisplayName, profile.Name);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error updating static pin: {ex.Message}";
+            StatusMessage = Localizer.Current.Format("Status.TaskbarScopeError", ex.Message);
         }
     }
 

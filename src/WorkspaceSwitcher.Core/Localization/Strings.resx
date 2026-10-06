@@ -327,4 +327,99 @@
     <value>Monitor {0} ({1}×{2} at {3},{4})</value>
     <comment>Non-primary monitor name: {0} index, {1} width, {2} height, {3} left, {4} top; negative coordinates keep their minus sign.</comment>
   </data>
+  <!-- Taskbar configuration area (TASK-05). Repeated titles share Taskbar.Title and the
+       two snapshot entries share Taskbar.SnapshotButton; badge emojis stay literal. -->
+  <data name="Taskbar.Title" xml:space="preserve">
+    <value>Taskbar Pinned Apps</value>
+    <comment>Tab and section title; every repeated title reuses this one term.</comment>
+  </data>
+  <data name="Taskbar.EnabledLabel" xml:space="preserve">
+    <value>Enabled for this workspace</value>
+  </data>
+  <data name="Taskbar.SnapshotButton" xml:space="preserve">
+    <value>Snapshot Current Taskbar</value>
+    <comment>Shared name of both snapshot entries (header button and empty-state button).</comment>
+  </data>
+  <data name="Taskbar.ApplyButton" xml:space="preserve">
+    <value>Apply Taskbar Now</value>
+  </data>
+  <data name="Taskbar.SyncButton" xml:space="preserve">
+    <value>Sync Static Pins</value>
+  </data>
+  <data name="Taskbar.SyncTooltip" xml:space="preserve">
+    <value>Sync all static pins across all saved workspaces</value>
+  </data>
+  <data name="Taskbar.ScopeStatic" xml:space="preserve">
+    <value>📌 Static (All Workspaces)</value>
+    <comment>Scope pill for pins kept in every workspace (全局固定 / global pins).</comment>
+  </data>
+  <data name="Taskbar.ScopeWorkspaceOnly" xml:space="preserve">
+    <value>🗔 Workspace Only</value>
+    <comment>Scope pill for pins used only in one workspace (仅此工作区).</comment>
+  </data>
+  <data name="Taskbar.ToggleHelp" xml:space="preserve">
+    <value>Toggle 📌 Static on any app to keep it pinned across all workspaces (e.g. Browser, File Explorer). 🗔 Workspace Only apps will appear exclusively when this workspace is active.</value>
+    <comment>Complete sentences; TaskbarDisplay splits them at the term needles for emphasis without reordering text.</comment>
+  </data>
+  <data name="Taskbar.HelpTermStatic" xml:space="preserve">
+    <value>📌 Static</value>
+    <comment>Emphasis needle; must appear verbatim inside Taskbar.ToggleHelp.</comment>
+  </data>
+  <data name="Taskbar.HelpTermWorkspaceOnly" xml:space="preserve">
+    <value>🗔 Workspace Only</value>
+    <comment>Emphasis needle; must appear verbatim inside Taskbar.ToggleHelp.</comment>
+  </data>
+  <data name="Taskbar.RemoveTooltip" xml:space="preserve">
+    <value>Remove from this workspace layout</value>
+  </data>
+  <data name="Taskbar.ShellShortcutFallback" xml:space="preserve">
+    <value>Windows Shell Shortcut</value>
+    <comment>Fallback shown for pins without a target path; real paths stay verbatim.</comment>
+  </data>
+  <data name="Taskbar.EmptyTitle" xml:space="preserve">
+    <value>No Taskbar Layout Captured For This Workspace</value>
+  </data>
+  <data name="Taskbar.EmptyDescription" xml:space="preserve">
+    <value>Click 'Snapshot Current Taskbar' to save your currently pinned taskbar apps (games, IDEs, tools) to this workspace.</value>
+    <comment>References the shared snapshot button name from Taskbar.SnapshotButton.</comment>
+  </data>
+  <!-- Taskbar operation result status (TASK-05). Complete templates only; user data and
+       exception messages stay verbatim inside the parameters. -->
+  <data name="Status.TaskbarCaptured" xml:space="preserve">
+    <value>Captured {0} taskbar pin(s) for '{1}'.</value>
+    <comment>{0} pinned-item count (0, 1 or many), {1} workspace name.</comment>
+  </data>
+  <data name="Status.TaskbarCaptureFailed" xml:space="preserve">
+    <value>Error capturing taskbar pins: {0}</value>
+  </data>
+  <data name="Status.TaskbarNoConfig" xml:space="preserve">
+    <value>No taskbar configuration captured for this workspace.</value>
+  </data>
+  <data name="Status.TaskbarApplySuccess" xml:space="preserve">
+    <value>Applied taskbar layout for '{0}' ({1} pinned apps).</value>
+    <comment>{0} workspace name, {1} pinned-item count.</comment>
+  </data>
+  <data name="Status.TaskbarApplyFailed" xml:space="preserve">
+    <value>Failed to apply taskbar layout for '{0}'.</value>
+  </data>
+  <data name="Status.TaskbarApplyError" xml:space="preserve">
+    <value>Error applying taskbar: {0}</value>
+  </data>
+  <data name="Status.TaskbarSyncSuccess" xml:space="preserve">
+    <value>Synchronized static taskbar pins across all workspaces.</value>
+  </data>
+  <data name="Status.TaskbarSyncFailed" xml:space="preserve">
+    <value>Error syncing static pins: {0}</value>
+  </data>
+  <data name="Status.TaskbarMarkedStatic" xml:space="preserve">
+    <value>'{0}' is now marked Static (preserved across all workspaces).</value>
+    <comment>Pin-scope change result; {0} is the real application name.</comment>
+  </data>
+  <data name="Status.TaskbarMarkedWorkspaceOnly" xml:space="preserve">
+    <value>'{0}' is now workspace-only for '{1}'.</value>
+    <comment>Pin-scope change result; {0} application name, {1} workspace name.</comment>
+  </data>
+  <data name="Status.TaskbarScopeError" xml:space="preserve">
+    <value>Error updating static pin: {0}</value>
+  </data>
 </root>
